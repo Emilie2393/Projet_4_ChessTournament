@@ -12,7 +12,10 @@ class View:
             return None
         return first_name, last_name, birthdate
 
-    def get_score(self):
-        score_1 = input("tapez le score du joueur 1 : ")
-        score_2 = input("tapez le score du joueur 2 : ")
+    def get_score(self, player1, player2):
+        score_1 = int(input(f"tapez le score de {player1} : "))
+        score_2 = int(input(f"tapez le score du {player2} : "))
         return score_1, score_2
+
+    def next_tour(self):
+        wait = input("Tapez Entrée quand vous êtes prêts pour le prochain round : ")
