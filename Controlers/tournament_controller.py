@@ -26,12 +26,19 @@ class TournamentController:
         self.tournament = tournament
         print(self.tournament)
 
+    def stop_tournament(self, state):
+        choice = 0
+        while choice != "1" or "2":
+            choice = self.view.continue_or_not(state)
+            if choice == "1":
+                break
+            if choice == "2":
+                print("en construction")
+
     def get_players(self):
         """Get some players."""
         while len(self.players) < 8:
             name = self.view.prompt_for_player()
-            if not name:
-                return
             player = Player(name)
             self.players.append(player)
 
@@ -53,11 +60,14 @@ class TournamentController:
             self.scores[self.players[i + 1]] += scores[1]
             print("score", self.scores, "players", self.players)
             print("tour matchs : ", tour.matches)
+            self.stop_tournament("tour")
         tournament = self.tournament
         tournament.add_tour(tour)
+        tournament.round += 1
         for i in self.players:
             self.previous_players_list.append(i)
         print("tours list", self.tournament.tours_list)
+        print("tour", self.tournament)
         wait = self.view.next_tour()
 
     def check_identical_matches(self, sorted_keys, start_list=0):
@@ -86,10 +96,10 @@ class TournamentController:
         print("player", self.players, "score", sorted_scores)
         self.check_identical_matches(sorted_keys)
 
-    def run(self):
+    def new_tournament(self):
         """Run the game."""
-        self.get_tournament()
-        self.get_players()
+        # self.get_tournament()
+        # self.get_players()
         self.init_scores()
         for i in range(1, 5):
             self.start_matches(i)

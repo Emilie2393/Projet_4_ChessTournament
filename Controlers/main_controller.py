@@ -18,14 +18,13 @@ class MainController:
             if datas == "2":
                 self.tournament_menu()
 
-
     def players_menu(self):
         datas = 0
         while datas != "1" or "2":
             datas = self.view.players_menu()
             if datas == "1":
                 self.tournament.get_players()
-                self.first_menu()
+                break
             if datas == "2":
                 print("en construction")
                 self.first_menu()
@@ -36,8 +35,8 @@ class MainController:
             datas = self.view.tournament_menu()
             if datas == "1":
                 self.tournament.get_tournament()
-                self.first_menu()
+                self.players_menu()
+                self.tournament.new_tournament()
             if datas == "2":
                 print("en construction")
                 self.first_menu()
-

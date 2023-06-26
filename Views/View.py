@@ -21,7 +21,7 @@ class View:
 
     def prompt_for_tournament(self):
         """Prompt for a name."""
-        name = input("tapez le prenom du tournoi : ")
+        name = input("tapez le nom du tournoi : ")
         place = input("tapez le lieu du tournoi : ")
         start_date = input("tapez la date de départ du tournoi : ")
         end_date = input("tapez la date de fin du tournoi : ")
@@ -49,3 +49,9 @@ class View:
 
     def next_tour(self):
         wait = input("Tapez Entrée quand vous êtes prêts pour le prochain round : ")
+
+    def continue_or_not(self, state):
+        choice = input(f"souhaitez-vous continuer ou enregistrer le {state} ? \n"
+                       "1 - continuer \n"
+                       "2 - enregistrer \n")
+        return choice

@@ -8,9 +8,10 @@ class Tournament:
         self.start_date = start_date
         self.end_date = end_date
         self.rounds_nb = rounds_nb
+        self.round = 0
 
     def __str__(self):
-        return f"{self.name, self.place, self.start_date, self.end_date, self.rounds_nb}"
+        return f"{self.name, self.place, self.start_date, self.end_date, self.rounds_nb, self.round}"
 
     def __repr__(self):
         return str(self)
