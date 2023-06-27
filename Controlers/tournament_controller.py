@@ -3,6 +3,7 @@ from Models.Match import Match
 from Models.Tour import Tour
 from Models.Tournament import Tournament
 from typing import List
+from Models.Datas import Datas
 import random
 
 
@@ -40,6 +41,8 @@ class TournamentController:
         while len(self.players) < 8:
             name = self.view.prompt_for_player()
             player = Player(name)
+            encoder = Datas()
+            encoder.players_encoder(player)
             self.players.append(player)
 
     def init_scores(self):
