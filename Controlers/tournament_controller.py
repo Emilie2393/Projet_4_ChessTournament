@@ -1,9 +1,12 @@
+import json
+
 from Models.Player import Player
 from Models.Match import Match
 from Models.Tour import Tour
 from Models.Tournament import Tournament
 from typing import List
 from Models.Datas import Datas
+from Controlers.datas_controller import DataController
 import random
 
 
@@ -42,8 +45,11 @@ class TournamentController:
             name = self.view.prompt_for_player()
             player = Player(name)
             encoder = Datas()
-            encoder.players_encoder(player)
+            test = encoder.players_encoder(player)
+            contain = DataController()
+            contain.player_file(test, i=(len(self.players)))
             self.players.append(player)
+            print(self.players)
 
     def init_scores(self):
         for i in self.players:
