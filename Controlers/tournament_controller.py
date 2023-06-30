@@ -1,13 +1,8 @@
-import json
-
 from Models.Player import Player
 from Models.Match import Match
 from Models.Tour import Tour
 from Models.Tournament import Tournament
 from typing import List
-from Models.Datas import Datas
-from Controlers.datas_controller import DataController
-import random
 
 
 class TournamentController:
@@ -37,19 +32,7 @@ class TournamentController:
             if choice == "1":
                 break
             if choice == "2":
-                print("en construction")
-
-    def get_players(self):
-        """Get some players."""
-        while len(self.players) < 8:
-            name = self.view.prompt_for_player()
-            player = Player(name)
-            encoder = Datas()
-            test = encoder.players_encoder(player)
-            contain = DataController()
-            contain.player_file(test, i=(len(self.players)))
-            self.players.append(player)
-            print(self.players)
+                return "stop"
 
     def init_scores(self):
         for i in self.players:

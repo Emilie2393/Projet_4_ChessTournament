@@ -51,7 +51,11 @@ class View:
         wait = input("Tapez Entrée quand vous êtes prêts pour le prochain round : ")
 
     def continue_or_not(self, state):
-        choice = input(f"souhaitez-vous continuer ou enregistrer le {state} ? \n"
+        choice = input(f"souhaitez-vous continuer ou enregistrer {state} ? \n"
                        "1 - continuer \n"
                        "2 - enregistrer \n")
+        return choice
+
+    def choose_players(self):
+        choice = input("merci d'inscrire le numéro du joueur souhaité : ")
         return choice

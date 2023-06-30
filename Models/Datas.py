@@ -1,19 +1,25 @@
-import json
+from tinydb import TinyDB, Query
 
 
-class Datas:
-    def __init__(self):
-        self.players = {}
-        self.tours = []
-        self.tournament = []
+class Data:
+    db = TinyDB('chess.json')
+    players = db.table('players')
 
     def players_encoder(self, player):
-        # file = open("players.json", "a+")
         data = {"firstname": player.first_name}
         return data
-        # "lastname": player.last_name,
-        # "birthdate": player.birthdate}
-        # self.players["players"] = data
-        # print(self.players)
-        # json_object = json.dumps(self.players)
-        # file.write(json_object)
+
+    def players_list(self, player):
+        self.players.insert(player)
+        print(self.players.all())
+
+    def get_datas(self, name):
+        data = self.players.get(doc_id=name)
+        return data
+
+    def save_tournament_player(self, players_list):
+        tournament_players = self.db.table('tournament_players')
+        for i in range(len(players_list)):
+            tournament_players.insert({"firstname": players_list[i]})
+
+

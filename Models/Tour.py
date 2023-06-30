@@ -1,4 +1,3 @@
-#from Match import match_one, match_two
 
 
 class Tour:
@@ -17,6 +16,4 @@ class Tour:
         self.matches.append(new)
 
 
-"""round1 = Tour("Round 1")
-test = round1.add_match([match_one, match_two])
-print("nom, Tour.add_match : ", test)"""
+
