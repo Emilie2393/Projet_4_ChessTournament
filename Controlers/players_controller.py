@@ -2,7 +2,6 @@ from Models.Datas import Data
 from Models.Player import Player
 
 
-
 class PlayersController:
     players_list = []
 
@@ -13,8 +12,8 @@ class PlayersController:
         name = self.view.prompt_for_player()
         player = Player(name)
         encoder = Data()
-        text_format = encoder.players_encoder(player)
-        encoder.players_list(text_format)
+        json_format = encoder.players_encoder(player)
+        encoder.players_insert(json_format)
 
     def tournament_players(self, selected):
         get_player = Data()

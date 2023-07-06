@@ -9,8 +9,12 @@ class View:
 
     def players_menu(self):
         choice = input("selectionner votre choix : \n"
-                       "1 - créer 8 nouveaux joueurs \n"
-                       "2 - récupérer joueurs existants \n")
+                       "1 - créer des nouveaux joueurs \n"
+                       "2 - voir tous les joueurs \n"
+                       "3 - créer la liste des joueurs du tournoi \n"
+                       "4 - voir la liste des joueurs du tournoi \n"
+                       "5 - effacer la liste de joueurs du tournoi \n"
+                       "6 - retour au menu principal \n")
         return choice
 
     def tournament_menu(self):
@@ -20,7 +24,6 @@ class View:
         return choice
 
     def prompt_for_tournament(self):
-        """Prompt for a name."""
         name = input("tapez le nom du tournoi : ")
         place = input("tapez le lieu du tournoi : ")
         start_date = input("tapez la date de départ du tournoi : ")
@@ -30,7 +33,6 @@ class View:
 
 
     def prompt_for_player(self):
-        """Prompt for a name."""
         first_name = input("tapez le prenom du joueur : ")
         # last_name = input("tapez le nom du joueur : ")
         # birthdate = input("tapez la naissance du joueur : ")
@@ -51,9 +53,9 @@ class View:
         wait = input("Tapez Entrée quand vous êtes prêts pour le prochain round : ")
 
     def continue_or_not(self, state):
-        choice = input(f"souhaitez-vous continuer ou enregistrer {state} ? \n"
+        choice = input(f"souhaitez-vous continuer {state} ? \n"
                        "1 - continuer \n"
-                       "2 - enregistrer \n")
+                       "2 - pause \n")
         return choice
 
     def choose_players(self):

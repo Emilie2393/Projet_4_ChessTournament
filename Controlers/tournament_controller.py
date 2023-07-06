@@ -89,9 +89,6 @@ class TournamentController:
         self.check_identical_matches(sorted_keys)
 
     def new_tournament(self):
-        """Run the game."""
-        # self.get_tournament()
-        # self.get_players()
         self.init_scores()
         for i in range(1, 5):
             self.start_matches(i)
