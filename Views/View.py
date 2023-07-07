@@ -20,7 +20,8 @@ class View:
     def tournament_menu(self):
         choice = input("selectionner votre choix : \n"
                        "1 - créer un nouveau tournoi \n"
-                       "2 - récupérer tournoi existant \n")
+                       "2 - récupérer tournoi existant \n"
+                       "3 - supprimer les tournois \n")
         return choice
 
     def prompt_for_tournament(self):
@@ -53,11 +54,22 @@ class View:
         wait = input("Tapez Entrée quand vous êtes prêts pour le prochain round : ")
 
     def continue_or_not(self, state):
-        choice = input(f"souhaitez-vous continuer {state} ? \n"
-                       "1 - continuer \n"
-                       "2 - pause \n")
+        choice = 0
+        if state == "avec ces joueurs":
+            choice = input(f"souhaitez-vous continuer {state} ? \n"
+                           "1 - continuer \n"
+                           "2 - pause \n"
+                           "3 - choisir d'autres joueurs \n")
+        else:
+            choice = input(f"souhaitez-vous continuer {state} ? \n"
+                           "1 - continuer \n"
+                           "2 - pause \n")
         return choice
 
     def choose_players(self):
         choice = input("merci d'inscrire le numéro du joueur souhaité : ")
+        return choice
+
+    def choose_tournament(self):
+        choice = input("merci d'inscrire le numéro du tournoi : ")
         return choice

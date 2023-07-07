@@ -5,6 +5,9 @@ from Models.Datas import Data
 from Views.View import View
 
 
+# a supprimer tournament players data
+# main menu
+# Datas = data
 def main():
     view = View()
     tournament = TournamentController(view)

@@ -2,6 +2,7 @@ from Models.Player import Player
 from Models.Match import Match
 from Models.Tour import Tour
 from Models.Tournament import Tournament
+from Models.Datas import Data
 from typing import List
 
 
@@ -10,9 +11,16 @@ class TournamentController:
     def __init__(self, view):
         self.tournament = []
         self.players: List[Player] = []
+        self.tours_list = []
         self.previous_players_list = []
         self.view = view
         self.scores = {}
+
+    def tournament_choice(self, selected):
+        get_tournament = Data()
+        selection = get_tournament.get_tournament(selected)
+        self.tournament = selection
+        print(self.tournament)
 
     def get_tournament(self):
         datas = self.view.prompt_for_tournament()
@@ -20,10 +28,13 @@ class TournamentController:
         place = datas[1]
         start_date = datas[2]
         end_date = datas[3]
-        rounds_nb = datas[4]
-        tournament = Tournament(name, place, start_date, end_date, rounds_nb)
+        round_in_progress = 1
+        tours_list = []
+        players_list = []
+        rounds_nb = 4
+        tournament = Tournament(name, place, start_date, end_date, round_in_progress, tours_list, players_list,
+                                rounds_nb)
         self.tournament = tournament
-        print(self.tournament)
 
     def stop_tournament(self, state):
         choice = 0
@@ -33,6 +44,8 @@ class TournamentController:
                 break
             if choice == "2":
                 return "stop"
+            if choice == "3":
+                return "players_menu"
 
     def init_scores(self):
         for i in self.players:
@@ -44,7 +57,9 @@ class TournamentController:
         r = round
         tour = Tour("Round" + str(r))
         tour.matches = []
+        tournament = self.tournament
         for i in range(0, rank, 2):
+            print("coucou")
             scores = self.view.get_score(self.players[i], self.players[i + 1])
             match = Match(self.players[i], scores[0], self.players[i + 1], scores[1])
             tour.add_match(match)
@@ -53,13 +68,12 @@ class TournamentController:
             print("score", self.scores, "players", self.players)
             print("tour matchs : ", tour.matches)
             self.stop_tournament("tour")
-        tournament = self.tournament
-        tournament.add_tour(tour)
-        tournament.round += 1
+        self.tours_list.append(tour)
+        tournament["round_in_progress"] += 1
         for i in self.players:
             self.previous_players_list.append(i)
-        print("tours list", self.tournament.tours_list)
-        print("tour", self.tournament)
+        print("tournament", self.tournament)
+        print("tour", self.tours_list)
         wait = self.view.next_tour()
 
     def check_identical_matches(self, sorted_keys, start_list=0):
