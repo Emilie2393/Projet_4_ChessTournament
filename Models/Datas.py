@@ -24,6 +24,10 @@ class Data:
             print(sorted(players))
         return sorted(players)
 
+    def tours_list_encoder(self, tours):
+        data = {"match": tours[0][0]}
+        print(data)
+
     def players_insert(self, player):
         self.players.insert(player)
 
@@ -75,11 +79,18 @@ class Data:
         return
 
     def save_tournament(self, tournament):
-        self.tournament.insert(tournament)
+        data = Query()
+        print("save", tournament)
+        if tournament["tours_list"]:
+            self.tournament.update({"tours_list": tournament["tours_list"]}, data["name"] == f"{tournament['name']}")
+        else:
+            self.tournament.insert(tournament)
+
 
     def update_tournament(self, name, players):
         data = Query()
         self.tournament.update({"players_list": players}, data["name"] == f"{name}")
+
 
     def delete_tournaments(self):
         self.tournament.truncate()

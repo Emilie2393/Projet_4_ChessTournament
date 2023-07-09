@@ -4,6 +4,7 @@ from Models.Tour import Tour
 from Models.Tournament import Tournament
 from Models.Datas import Data
 from typing import List
+import json
 
 
 class TournamentController:
@@ -57,11 +58,14 @@ class TournamentController:
         r = round
         tour = Tour("Round" + str(r))
         tour.matches = []
+        json_tours = []
         tournament = self.tournament
         for i in range(0, rank, 2):
-            print("coucou")
             scores = self.view.get_score(self.players[i], self.players[i + 1])
             match = Match(self.players[i], scores[0], self.players[i + 1], scores[1])
+            json_tours.append({self.players[i]: scores[0], self.players[i + 1]: scores[1]})
+            print("jsons", json_tours)
+            print(match)
             tour.add_match(match)
             self.scores[self.players[i]] += scores[0]
             self.scores[self.players[i + 1]] += scores[1]
@@ -74,7 +78,15 @@ class TournamentController:
             self.previous_players_list.append(i)
         print("tournament", self.tournament)
         print("tour", self.tours_list)
-        wait = self.view.next_tour()
+        status = self.stop_tournament("le tournoi en tour ou l'enregistrer")
+        if status == "stop":
+            tournament["tours_list"] = self.tours_list
+            data = Data()
+            data.tours_list_encoder(self.tours_list)
+            # data.save_tournament(tournament)
+            # print(data.tournament.all())
+
+        # wait = self.view.next_tour()
 
     def check_identical_matches(self, sorted_keys, start_list=0):
         len_sort_keys = len(sorted_keys)
