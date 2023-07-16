@@ -1,10 +1,9 @@
-from Models.Player import Player
-from Models.Match import Match
-from Models.Tour import Tour
-from Models.Tournament import Tournament
-from Models.Datas import Data
+from Models.player import Player
+from Models.match import Match
+from Models.tour import Tour
+from Models.tournament import Tournament
+from Models.data import Data
 from typing import List
-import json
 
 
 class TournamentController:
@@ -18,10 +17,13 @@ class TournamentController:
         self.scores = {}
 
     def tournament_choice(self, selected):
-        get_tournament = Data()
-        selection = get_tournament.get_tournament(selected)
-        self.tournament = selection
-        print(self.tournament)
+        data = Data()
+        selection = data.get_tournament(selected)
+        selected = data.tournament_desencoder(selection)
+        tournament = Tournament(selected[0], selected[1], selected[2], selected[3], selected[4], selected[5],
+                                selected[6], selected[7])
+        self.tournament = tournament
+        print(self.tournament.tours_list)
 
     def get_tournament(self):
         datas = self.view.prompt_for_tournament()
@@ -29,13 +31,16 @@ class TournamentController:
         place = datas[1]
         start_date = datas[2]
         end_date = datas[3]
-        round_in_progress = 1
+        round = 1
         tours_list = []
         players_list = []
         rounds_nb = 4
-        tournament = Tournament(name, place, start_date, end_date, round_in_progress, tours_list, players_list,
+        tournament = Tournament(name, place, start_date, end_date, tours_list, round, players_list,
                                 rounds_nb)
+
         self.tournament = tournament
+        print("t", self.tournament.name)
+        return tournament
 
     def stop_tournament(self, state):
         choice = 0
@@ -54,12 +59,20 @@ class TournamentController:
         print(self.scores)
 
     def start_matches(self, round):
+        data = Data()
         rank = len(self.players)
         r = round
         tour = Tour("Round" + str(r))
         tour.matches = []
         json_tours = []
         tournament = self.tournament
+        print("ne", tournament)
+        print(tournament.rounds_nb)
+        if tournament.tours_list:
+            data.tours_to_save = tournament.tours_list
+            print(tournament.tours_list)
+            print(data.tours_to_save)
+            print("json", json_tours)
         for i in range(0, rank, 2):
             scores = self.view.get_score(self.players[i], self.players[i + 1])
             match = Match(self.players[i], scores[0], self.players[i + 1], scores[1])
@@ -73,20 +86,18 @@ class TournamentController:
             print("tour matchs : ", tour.matches)
             self.stop_tournament("tour")
         self.tours_list.append(tour)
-        tournament["round_in_progress"] += 1
+        tournament.round += 1
         for i in self.players:
             self.previous_players_list.append(i)
         print("tournament", self.tournament)
         print("tour", self.tours_list)
         status = self.stop_tournament("le tournoi en tour ou l'enregistrer")
+        data.tours_list_encoder(tour.name, json_tours)
+        data.tours_list_insert(data.tours_to_save, tournament.name)
         if status == "stop":
-            tournament["tours_list"] = self.tours_list
-            data = Data()
-            data.tours_list_encoder(self.tours_list)
-            # data.save_tournament(tournament)
-            # print(data.tournament.all())
-
-        # wait = self.view.next_tour()
+            return False
+        else:
+            return True
 
     def check_identical_matches(self, sorted_keys, start_list=0):
         len_sort_keys = len(sorted_keys)
@@ -116,8 +127,13 @@ class TournamentController:
 
     def new_tournament(self):
         self.init_scores()
-        for i in range(1, 5):
-            self.start_matches(i)
+        j = 5
+        if self.tournament.tours_list:
+            j = 5 - len(self.tournament.tours_list)
+        for i in range(j, 5):
+            tournament = self.start_matches(i)
+            if not tournament:
+                break
             if i < 4:
                 self.sort_players()
         """self.sort_players()"""

@@ -1,7 +1,7 @@
 from Controlers.tournament_controller import TournamentController
 from Controlers.players_controller import PlayersController
 from Controlers.main_controller import MainController
-from Models.Datas import Data
+from Models.data import Data
 from Views.View import View
 
 

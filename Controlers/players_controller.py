@@ -1,5 +1,5 @@
-from Models.Datas import Data
-from Models.Player import Player
+from Models.data import Data
+from Models.player import Player
 
 
 class PlayersController:
