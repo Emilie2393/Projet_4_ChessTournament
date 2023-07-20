@@ -1,5 +1,4 @@
-from Controlers.tournament_controller import TournamentController
-from Models.data import Data
+from datetime import datetime
 
 
 class MainController:
@@ -10,85 +9,84 @@ class MainController:
         self.players = players
         self.data = data
 
-
     def first_menu(self):
-        datas = 0
-        while datas != "1" or "2":
-            datas = self.view.main_menu()
-            if datas == "1":
+        choice = 0
+        while choice != "1" or "2" or "3":
+            choice = self.view.main_menu()
+            if choice == "1":
                 self.players_menu()
-            if datas == "2":
+            if choice == "2":
                 self.tournament_menu()
+            if choice == "3":
+                self.data_menu()
 
     def players_menu(self):
-        datas = 0
-        tournament_players_list = self.players.players_list
-        json_players = self.data.players
-        json_tournament_players = self.data.tournament_players
+        choice = 0
+        data = self.data
+        json_players = data.players
+        json_tournament_players = data.tournament_players
+        tournament = self.tournament
 
         def associate_players():
             for i in range(len(json_players.all())):
                 print(i + 1, json_players.all()[i])
-            while len(tournament_players_list) < 8:
+            while len(json_tournament_players) < 8:
                 players_choice = self.view.choose_players()
-                self.players.tournament_players(players_choice)
-            self.data.save_tournament_player(tournament_players_list)
-            self.tournament.players = tournament_players_list
-            self.tournament.tournament.players_list = tournament_players_list
-            self.data.update_tournament(self.tournament.tournament.name, tournament_players_list)
+                data.save_tournament_player(self.players.tournament_players(players_choice))
+            tournament.players = data.players_desencoder("tournament_players")
+            tournament.tournament.players_list = data.players_desencoder("tournament_players")
+            data.update_tournament(tournament.tournament.name, data.players_desencoder("tournament_players"))
 
-        while datas != "1" or "2" or "3" or "4" or "5":
-            datas = self.view.players_menu()
+        while choice != "1" or "2" or "3" or "4" or "5":
+            choice = self.view.players_menu()
             # create new players
-            if datas == "1":
+            if choice == "1":
                 status = 0
                 # register players in json
                 while status != "stop":
                     self.players.get_new_players()
-                    self.data.players_desencoder("all_players")
-                    status = self.tournament.stop_tournament("enregistrer un nouveau joueur ?")
+                    data.players_desencoder("all_players")
+                    status = tournament.stop_tournament("enregistrer un nouveau joueur ?")
                 break
             # get all players
-            if datas == "2":
+            if choice == "2":
                 if not json_players:
                     print("la liste est vide, merci de créer des joueurs")
                     self.players_menu()
                     break
                 else:
-                    self.data.players_desencoder("all_players")
+                    data.players_desencoder("all_players")
             # create tournament players list
-            if datas == "3":
+            if choice == "3":
                 if not json_players:
                     print("la liste est vide, merci de créer des joueurs")
                     self.players_menu()
                     break
                 if len(json_players) < 8:
-                    self.data.players_desencoder("players")
+                    data.players_desencoder("players")
                     print("il n'y a pas assez de joueurs, merci de créer des joueurs supplémentaires")
                     self.players_menu()
                     break
-                if self.tournament.tournament:
+                if tournament.tournament:
                     if json_tournament_players:
                         print("ce tournoi est selectionné : ")
-                        print(self.tournament.tournament)
+                        print(tournament.tournament)
                         print("souhaitez-vous lui affilier ces joueurs ? :")
-                        self.data.players_desencoder("tournament_players")
-                        status = self.tournament.stop_tournament("cette association")
+                        data.players_desencoder("tournament_players")
+                        status = tournament.stop_tournament("cette association")
                         if status == "stop":
-                            self.data.delete_tournament_player()
-                            tournament_players_list = []
+                            data.delete_tournament_player()
                             self.players_menu()
                             break
                         else:
-                            self.data.update_tournament(self.tournament.tournament.name, tournament_players_list)
+                            data.update_tournament(tournament.tournament.name,
+                                                   data.players_desencoder("tournament_players"))
                     else:
-                        print(tournament_players_list)
-                        if len(tournament_players_list) < 8:
-                            print(tournament_players_list)
+                        if len(json_tournament_players) < 8:
                             associate_players()
-                        print(f"cette liste est enregistrée dans le tournoi {self.tournament.tournament.name}")
-                        self.data.players_desencoder("tournament_players")
-                        status = self.tournament.stop_tournament("vers le tournoi")
+                        print(f"cette liste est enregistrée dans le tournoi {tournament.tournament.name}")
+                        data.players_desencoder("tournament_players")
+                        status = tournament.stop_tournament("vers le tournoi")
                         if status == "stop":
                             self.players_menu()
                             break
@@ -96,9 +94,9 @@ class MainController:
                             self.tournament_menu()
                             break
                 else:
-                    if len(tournament_players_list) < 8:
+                    if len(json_tournament_players) < 8:
                         associate_players()
-                    status = self.tournament.stop_tournament("vers le tournoi")
+                    status = tournament.stop_tournament("vers le tournoi")
                     if status == "stop":
                         self.players_menu()
                         break
@@ -106,59 +104,59 @@ class MainController:
                         self.tournament_menu()
                         break
             # get tournament players list
-            if datas == "4":
+            if choice == "4":
                 if not json_tournament_players:
                     print("il n'y a pas de liste enregistrée")
                 else:
-                    if self.tournament.tournament:
-                        if self.tournament.tournament.players_list:
-                            self.data.players_desencoder("tournament_players")
+                    if tournament.tournament:
+                        if tournament.tournament.players_list:
+                            data.players_desencoder("tournament_players")
                         else:
                             print("ce tournoi est selectionné : ")
-                            print(self.tournament.tournament)
+                            print(tournament.tournament)
                             print("souhaitez-vous lui affilier ces joueurs ? :")
-                            self.data.players_desencoder("tournament_players")
-                            status = self.tournament.stop_tournament("cette association")
+                            data.players_desencoder("tournament_players")
+                            status = tournament.stop_tournament("cette association")
                             if status == "stop":
-                                self.data.delete_tournament_player()
-                                tournament_players_list = []
+                                data.delete_tournament_player()
                                 self.players_menu()
                                 break
                             else:
-                                self.data.update_tournament(self.tournament.tournament.name,
-                                                            self.data.players_desencoder("tournament_players"))
+                                data.update_tournament(tournament.tournament.name,
+                                                       data.players_desencoder("tournament_players"))
                     else:
-                        self.data.players_desencoder("tournament_players")
+                        data.players_desencoder("tournament_players")
             # delete tournament players list
-            if datas == "5":
-                to_delete = self.data.delete_tournament_player()
+            if choice == "5":
+                to_delete = data.delete_tournament_player()
                 print(to_delete)
                 if not to_delete:
                     print("il n'y a pas de liste enregistrée")
                 else:
-                    self.data.players_desencoder("tournament_players")
-            if datas == "6":
+                    data.players_desencoder("tournament_players")
+            if choice == "6":
                 self.first_menu()
 
     def tournament_menu(self):
-        datas = 0
+        choice = 0
         tournament = self.tournament
-        json_tournament = self.data.tournament
-        json_tournament_players = self.data.tournament_players
-        while datas != "1" or "2":
-            datas = self.view.tournament_menu()
-            if datas == "1":
+        data = self.data
+        json_tournament = data.tournament
+        json_tournament_players = data.tournament_players
+        while choice != "1" or "2":
+            choice = self.view.tournament_menu()
+            if choice == "1":
                 tournament.get_tournament()
                 print(tournament.tournament)
-                to_save = self.data.tournament_encoder(tournament.tournament)
-                self.data.save_tournament(to_save)
+                to_save = data.tournament_encoder(tournament.tournament)
+                data.save_tournament(to_save)
                 if not json_tournament_players:
                     print("il n'y a pas de joueurs pour ce tournoi, merci d'en selectionner")
                     self.players_menu()
                     break
                 print(tournament.tournament.name)
                 print(tournament.tournament)
-                tournament.tournament.players_list = self.data.players_desencoder("tournament_players")
+                tournament.tournament.players_list = data.players_desencoder("tournament_players")
                 status = tournament.stop_tournament("avec ces joueurs")
                 if status == "stop":
                     self.first_menu()
@@ -168,11 +166,12 @@ class MainController:
                     self.players_menu()
                     break
                 else:
-                    self.data.update_tournament(tournament.tournament.name, tournament.tournament.players_list)
+                    data.update_tournament(tournament.tournament.name, tournament.tournament.players_list)
                     tournament.players = tournament.tournament.players_list
+                    tournament.tournament.start_date = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
                     tournament.new_tournament()
                     break
-            if datas == "2":
+            if choice == "2":
                 if not json_tournament:
                     print("pas de tournoi enregistré, merci d'en créer un nouveau")
                     self.tournament_menu()
@@ -190,20 +189,21 @@ class MainController:
                         print("yo", tournament.tournament.players_list)
                         if not tournament.tournament.players_list:
                             if json_tournament_players:
-                                tournament.tournament.players_list = self.data.players_desencoder("tournament_players")
+                                tournament.tournament.players_list = data.players_desencoder("tournament_players")
                                 status = tournament.stop_tournament("avec ces joueurs")
                                 if status == "stop":
                                     self.first_menu()
                                     break
                                 if status == "players_menu":
                                     tournament.tournament.players_list = []
-                                    self.data.delete_tournament_player()
+                                    data.delete_tournament_player()
                                     self.players_menu()
                                     break
                                 else:
-                                    self.data.update_tournament(tournament.tournament.name,
-                                                                tournament.tournament.players_list)
+                                    data.update_tournament(tournament.tournament.name,
+                                                           tournament.tournament.players_list)
                                     tournament.players = tournament.tournament.players_list
+                                    tournament.tournament.start_date = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
                                     tournament.new_tournament()
                                     break
                             else:
@@ -216,15 +216,42 @@ class MainController:
                                 break
                             else:
                                 print(tournament.players)
+                                tournament.tournament.start_date = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+                                print(tournament.tournament)
                                 tournament.new_tournament()
                                 break
 
-            if datas == "3":
+            if choice == "3":
                 if not json_tournament:
                     print("pas de tournoi enregistré, merci d'en créer un nouveau")
                     self.tournament_menu()
                     break
                 else:
-                    self.data.delete_tournaments()
+                    data.delete_tournaments()
                     self.first_menu()
                     break
+
+    def data_menu(self):
+        choice = 0
+        details_choice = 0
+        data = self.data
+        json_tournament = data.tournament
+        json_tournament_players = data.tournament_players
+        while choice != "1" or "2":
+            choice = self.view.data_menu()
+            if choice == "1":
+                data.players_desencoder("all_players")
+            if choice == "2":
+                for i in range(len(json_tournament.all())):
+                    print(i + 1, data.tournament_desencoder(json_tournament.all()[i])[0])
+                tournament_choice = self.view.choose_tournament()
+                selected = data.tournament_desencoder(data.get_tournament(tournament_choice))
+                print(selected[0], "\ndate début: ", selected[2], "\ndate fin: ", selected[3])
+                while details_choice != "1" or "2" or "3":
+                    details_choice = self.view.data_tournament_menu()
+                    if details_choice == "1":
+                        print(selected[6])
+
+
+
+

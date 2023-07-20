@@ -4,6 +4,7 @@ from Models.tour import Tour
 from Models.tournament import Tournament
 from Models.data import Data
 from typing import List
+from datetime import datetime
 
 
 class TournamentController:
@@ -23,14 +24,13 @@ class TournamentController:
         tournament = Tournament(selected[0], selected[1], selected[2], selected[3], selected[4], selected[5],
                                 selected[6], selected[7])
         self.tournament = tournament
-        print(self.tournament.tours_list)
 
     def get_tournament(self):
         datas = self.view.prompt_for_tournament()
         name = datas[0]
         place = datas[1]
-        start_date = datas[2]
-        end_date = datas[3]
+        start_date = []
+        end_date = []
         round = 1
         tours_list = []
         players_list = []
@@ -127,7 +127,7 @@ class TournamentController:
 
     def new_tournament(self):
         self.init_scores()
-        j = 5
+        j = 1
         if self.tournament.tours_list:
             j = 5 - len(self.tournament.tours_list)
         for i in range(j, 5):
@@ -136,4 +136,6 @@ class TournamentController:
                 break
             if i < 4:
                 self.sort_players()
-        """self.sort_players()"""
+        self.tournament.end_date = datetime.now()
+
+

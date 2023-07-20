@@ -1,6 +1,4 @@
 class Tournament:
-    tours_list = []
-    players_list = []
 
     def __init__(self, name, place, start_date, end_date, tours_list, round, players_list, rounds_nb=4):
         self.name = name
@@ -17,6 +15,3 @@ class Tournament:
 
     def __repr__(self):
         return str(self)
-
-    def add_tour(self, new):
-        self.tours_list.append(new)

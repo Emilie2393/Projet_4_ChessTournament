@@ -45,13 +45,12 @@ class Data:
         data = self.tournament.get(doc_id=name)
         return data
 
-    def save_tournament_player(self, players_list):
-        if self.db.table("tournament_player") != {}:
-            self.db.table('tournament_players').truncate()
+    def save_tournament_player(self, player):
+        if len(self.db.table("tournament_player")) < 8:
+            self.tournament_players.insert(player)
+            print(self.tournament_players.all())
         else:
-            pass
-        for i in range(len(players_list)):
-            self.tournament_players.insert({"firstname": players_list[i]})
+            print("complet")
 
     def check_tournament_player(self):
         if not self.tournament_players.all():

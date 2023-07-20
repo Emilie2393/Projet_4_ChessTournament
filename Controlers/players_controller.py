@@ -3,7 +3,6 @@ from Models.player import Player
 
 
 class PlayersController:
-    players_list = []
 
     def __init__(self, view):
         self.view = view
@@ -18,5 +17,7 @@ class PlayersController:
     def tournament_players(self, selected):
         get_player = Data()
         selection = get_player.get_datas(selected)
-        self.players_list.append(selection["firstname"])
-        print(self.players_list)
+        print(selection)
+        return selection
+        """self.players_list.append(selection["firstname"])
+        print(self.players_list)"""

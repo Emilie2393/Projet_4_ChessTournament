@@ -4,7 +4,7 @@ class View:
         choice = input("selectionner votre choix : \n"
                        "1 - menu joueur \n"
                        "2 - menu tournoi \n"
-                       "3 - menu datas \n")
+                       "3 - menu data \n")
         return choice
 
     def players_menu(self):
@@ -24,13 +24,23 @@ class View:
                        "3 - supprimer les tournois \n")
         return choice
 
+    def data_menu(self):
+        choice = input("selectionner votre choix : \n"
+                       "1 - afficher tous les joueurs \n"
+                       "2 - afficher tous les tournois \n")
+        return choice
+
+    def data_tournament_menu(self):
+        choice = input("selectionner votre choix : \n"
+                       "1 - afficher les joueurs de ce tournoi \n"
+                       "2 - afficher les tours du tournoi \n"
+                       "3 - revenir au menu \n")
+        return choice
+
     def prompt_for_tournament(self):
         name = input("tapez le nom du tournoi : ")
         place = input("tapez le lieu du tournoi : ")
-        start_date = input("tapez la date de départ du tournoi : ")
-        end_date = input("tapez la date de fin du tournoi : ")
-        rounds_nb = input("tapez le nombre de rounds du tournoi : ")
-        return name, place, start_date, end_date, rounds_nb
+        return name, place
 
 
     def prompt_for_player(self):
