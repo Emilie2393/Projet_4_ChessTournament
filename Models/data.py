@@ -8,6 +8,8 @@ class Data:
     tournament_players = db.table('tournament_players')
     tournament = db.table('tournament')
     tours_to_save = []
+    scores = []
+    prev_games = []
 
     def players_encoder(self, player):
         data = {"firstname": player.first_name}
@@ -28,7 +30,7 @@ class Data:
     def tours_list_encoder(self, name, tour):
         data = {name: tour}
         self.tours_to_save.append(data)
-        print(self.tours_to_save)
+        print("to_savedata", self.tours_to_save)
 
     def tours_list_insert(self, tours, name):
         data = Query()
@@ -67,8 +69,8 @@ class Data:
     def tournament_encoder(self, tournament):
         data = {"name": tournament.name, "place": tournament.place, "start_date": tournament.start_date,
                 "end_date": tournament.end_date, "tours_list": tournament.tours_list,
-                "round": tournament.round, "players_list": tournament.players_list,
-                "rounds_nb": tournament.rounds_nb}
+                "round": tournament.round, "players_list": tournament.players_list, "scores": tournament.scores,
+                "prev_games": tournament.prev_games, "rounds_nb": tournament.rounds_nb}
         return data
 
     def tournament_desencoder(self, tournament):
@@ -79,8 +81,10 @@ class Data:
         rounds_nb = tournament["rounds_nb"]
         round = tournament["round"]
         players_list = tournament["players_list"]
+        scores = tournament["scores"]
+        prev_games = tournament["prev_games"]
         tours_list = tournament["tours_list"]
-        data = [name, place, start_date, end_date, tours_list, round, players_list, rounds_nb]
+        data = [name, place, start_date, end_date, tours_list, round, players_list, scores, prev_games, rounds_nb]
         return data
 
     def save_tournament(self, tournament):
@@ -91,17 +95,25 @@ class Data:
         else:
             self.tournament.insert(tournament)
 
-    def update_tournament(self, name, players):
+    def update_tournament_start(self, name, players, start=0):
         data = Query()
         self.tournament.update({"players_list": players}, data["name"] == f"{name}")
+        if start != 0:
+            self.tournament.update({"start_date": start}, data["name"] == f"{name}")
 
-    def update_tournament_tours(self, name, tours):
+    def update_tournament_tours(self, name, scores, prev_games, tour_nb):
+        print(self.scores)
         data = Query()
-        self.tournament.update({"players_list": tours}, data["name"] == f"{name}")
+        self.tournament.update({"scores": scores}, data["name"] == f"{name}")
+        self.tournament.update({"prev_games": prev_games}, data["name"] == f"{name}")
+        self.tournament.update({"round": tour_nb}, data["name"] == f"{name}")
+        print(self.tournament.all())
+
 
     def check_tournament(self, name):
         data = Query()
-        self.tournament.search(data.name == f"{name}")
+        result = self.tournament.search(data["name"] == f"{name}")
+        return result
 
     def delete_tournaments(self):
         self.tournament.truncate()

@@ -21,13 +21,15 @@ class View:
         choice = input("selectionner votre choix : \n"
                        "1 - créer un nouveau tournoi \n"
                        "2 - récupérer tournoi existant \n"
-                       "3 - supprimer les tournois \n")
+                       "3 - supprimer les tournois \n"
+                       "4 - retour au menu principal \n")
         return choice
 
     def data_menu(self):
         choice = input("selectionner votre choix : \n"
                        "1 - afficher tous les joueurs \n"
-                       "2 - afficher tous les tournois \n")
+                       "2 - afficher tous les tournois \n"
+                       "3 - retour au menu principal \n")
         return choice
 
     def data_tournament_menu(self):
