@@ -34,8 +34,9 @@ class MainController:
                 players_choice = self.view.choose_players()
                 data.save_tournament_player(self.players.tournament_players(players_choice))
             tournament.players = data.players_desencoder("tournament_players")
-            tournament.tournament.players_list = data.players_desencoder("tournament_players")
-            data.update_tournament_start(tournament.tournament.name, data.players_desencoder("tournament_players"))
+            if tournament.tournament:
+                tournament.tournament.players_list = data.players_desencoder("tournament_players")
+                data.update_tournament_start(tournament.tournament.name, data.players_desencoder("tournament_players"))
 
         while choice != "1" or "2" or "3" or "4" or "5":
             choice = self.view.players_menu()
@@ -46,7 +47,7 @@ class MainController:
                 while status != "stop":
                     self.players.get_new_players()
                     data.players_desencoder("all_players")
-                    status = tournament.stop_tournament("enregistrer un nouveau joueur ?")
+                    status = tournament.stop_tournament("à enregistrer des joueurs ?")
                 break
             # get all players
             if choice == "2":
@@ -80,7 +81,7 @@ class MainController:
                             break
                         else:
                             data.update_tournament_start(tournament.tournament.name,
-                                                   data.players_desencoder("tournament_players"))
+                                                         data.players_desencoder("tournament_players"))
                     else:
                         if len(json_tournament_players) < 8:
                             associate_players()
@@ -260,7 +261,7 @@ class MainController:
                     while details_choice != "1" or "2" or "3":
                         details_choice = self.view.data_tournament_menu()
                         if details_choice == "1":
-                            print(selected[6])
+                            print(sorted(selected[6]))
                         if details_choice == "2":
                             print(selected[4])
                         if details_choice == "3":
@@ -272,8 +273,3 @@ class MainController:
             if choice == "3":
                 self.first_menu()
                 break
-
-
-
-
-

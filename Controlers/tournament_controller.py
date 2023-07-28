@@ -56,7 +56,9 @@ class TournamentController:
                 return "players_menu"
 
     def init_scores(self):
+        print(self.players[0])
         for i in self.players:
+            # name = self.players[i][0] + " " + self.players[i][1]
             self.scores[i] = 0
         print(self.scores)
 
@@ -68,15 +70,16 @@ class TournamentController:
         tour = Tour("Round" + str(r))
         tour.matches = []
         tours_list = []
-        # tours_list = self.tours_list
         print("avant verif tour", tours_list)
+        print("prev", tournament.prev_games)
         print(data.tours_to_save)
         ## probleme ici le tour précédent ne s'enregistre pas
         if tournament.tours_list:
             print(tournament.tours_list[len(tournament.tours_list) - 1]["Round" + str(len(tournament.tours_list))])
             print(len(tournament.tours_list[len(tournament.tours_list) - 1]["Round" + str(len(tournament.tours_list))]))
             self.previous_players_list = tournament.prev_games
-            if len(tournament.tours_list[len(tournament.tours_list)-1]["Round" + str(len(tournament.tours_list))]) > 3:
+            if len(tournament.tours_list[len(tournament.tours_list) - 1]
+                   ["Round" + str(len(tournament.tours_list))]) > 3:
                 print("heyehfhz")
                 e = 0
                 data.tours_to_save = tournament.tours_list
@@ -87,7 +90,7 @@ class TournamentController:
                     for i in matches:
                         tours_list.append(i)
                         print(tours_list)
-                    for f in range(len(tournament.tours_list)-1):
+                    for f in range(len(tournament.tours_list) - 1):
                         print(tournament.tours_list[f])
                         data.tours_to_save.append(tournament.tours_list[f])
                         print(data.tours_to_save)
@@ -98,17 +101,19 @@ class TournamentController:
                     print(data.tours_to_save)
         print("ne", tournament)
         print(tournament.round)
+        print("what", self.players)
         for i in range(e, rank, 2):
-            scores = self.view.get_score(self.players[i], self.players[i + 1])
-            match = Match(self.players[i], scores[0], self.players[i + 1], scores[1])
-            tours_list.append({self.players[i]: scores[0], self.players[i + 1]: scores[1]})
+            player1 = self.players[i]  # [0] + " " + self.players[i][1]
+            player2 = self.players[i + 1]  # [0] + " " + self.players[i + 1][1]
+            scores = self.view.get_score(player1, player2)
+            match = Match(player1, scores[0], player2, scores[1])
+            tours_list.append({player1: scores[0], player2: scores[1]})
             print("jsons", tours_list)
             print(match)
             tour.add_match(match)
-            self.scores[self.players[i]] += scores[0]
-            self.scores[self.players[i + 1]] += scores[1]
+            self.scores[player1] += scores[0]
+            self.scores[player2] += scores[1]
             print("score", self.scores, "players", self.players)
-            # print("tour matchs : ", tour.matches)
             status = self.stop_tournament("tour")
             if status == "stop":
                 break
@@ -119,8 +124,8 @@ class TournamentController:
             tournament.round += 1
         for i in self.players:
             self.previous_players_list.append(i)
+        print(self.previous_players_list)
         print("tournament", self.tournament)
-        # print("tour", self.tours_list)
         print("tours_list", tours_list)
         print("yo", tournament.tours_list)
         print("tosave", data.tours_to_save)
@@ -129,6 +134,7 @@ class TournamentController:
         data.tours_list_insert(data.tours_to_save, tournament.name)
         data.scores = self.scores
         data.prev_games = self.previous_players_list
+        print("to register", data.prev_games)
         new = data.tournament_desencoder(data.check_tournament(tournament.name)[0])
         self.tournament = Tournament(new[0], new[1], new[2], new[3], new[4], new[5],
                                      new[6], new[7], new[8])
@@ -159,12 +165,21 @@ class TournamentController:
                     sorted_keys[e], sorted_keys[e - 2] = sorted_keys[e - 2], sorted_keys[e]
                     print("apres", sorted_keys)
                 print("e", new_match)
+        print(sorted_keys)
         self.players = sorted_keys
-        print(self.players)
+        """
+        for f in range(len(sorted_keys)):
+            data = Data()
+            name = data.find_full_player(sorted_keys[f])[0]
+            print("check", self.players)
+            print(name)
+            sorted_players.append([name["firstname"], name["lastname"], name["birthdate"]])
+        self.players = sorted_players"""
 
     def sort_players(self):
         sorted_scores = dict(sorted(self.scores.items(), key=lambda item: item[1], reverse=True))
         sorted_keys = list(sorted_scores.keys())
+        print(sorted_keys)
         print("player", self.players, "score", sorted_scores)
         self.check_identical_matches(sorted_keys)
 
@@ -175,16 +190,15 @@ class TournamentController:
         tours = self.tournament.tours_list
         matchs = []
         e = 0
-        tour = 0
         if tours:
             print(tours)
             j = j + len(tours)
             self.scores = self.tournament.scores
             print(len(tours))
-            if len(tours[len(tours)-1]["Round" + str(len(tours))]) < 4:
-                print(tours[len(tours)-1]["Round" + str(len(tours))])
-                e = 2 * len(tours[len(tours)-1]["Round" + str(len(tours))])
-                matchs = tours[len(tours)-1]["Round" + str(len(tours))]
+            if len(tours[len(tours) - 1]["Round" + str(len(tours))]) < 4:
+                print(tours[len(tours) - 1]["Round" + str(len(tours))])
+                e = 2 * len(tours[len(tours) - 1]["Round" + str(len(tours))])
+                matchs = tours[len(tours) - 1]["Round" + str(len(tours))]
                 j = len(tours)
         for i in range(j, 5):
             print("i", i, "j", j, "e", e)
@@ -193,5 +207,5 @@ class TournamentController:
                 data.update_tournament_start(self.tournament.name, self.players)
                 break
             # if i < 4:
-                # self.sort_players()
+            # self.sort_players()
         self.tournament.end_date = datetime.now()

@@ -9,7 +9,7 @@ class PlayersController:
 
     def get_new_players(self):
         name = self.view.prompt_for_player()
-        player = Player(name)
+        player = Player(name[0], name[1], name[2])
         encoder = Data()
         json_format = encoder.players_encoder(player)
         encoder.players_insert(json_format)

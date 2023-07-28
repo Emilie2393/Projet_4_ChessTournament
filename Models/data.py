@@ -1,5 +1,4 @@
-from tinydb import TinyDB, Query, where
-from tinydb.operations import delete
+from tinydb import TinyDB, Query
 
 
 class Data:
@@ -12,18 +11,18 @@ class Data:
     prev_games = []
 
     def players_encoder(self, player):
-        data = {"firstname": player.first_name}
+        data = {"firstname": player.first_name, "lastname": player.last_name, "birthdate": player.birthdate}
         return data
 
     def players_desencoder(self, query):
         players = []
         if query == "all_players":
             for i in self.players:
-                players.append(i["firstname"])
+                players.append([i["firstname"], i["lastname"], i["birthdate"]])
             print(sorted(players))
         if query == "tournament_players":
             for i in self.tournament_players:
-                players.append(i["firstname"])
+                players.append(i["firstname"] + " " + i["lastname"])
             print(sorted(players))
         return sorted(players)
 
@@ -109,10 +108,14 @@ class Data:
         self.tournament.update({"round": tour_nb}, data["name"] == f"{name}")
         print(self.tournament.all())
 
-
     def check_tournament(self, name):
         data = Query()
         result = self.tournament.search(data["name"] == f"{name}")
+        return result
+
+    def find_full_player(self, name):
+        split_name = name.split()
+        result = self.players.search(Query().fragment({'firstname': split_name[0], 'lastname': split_name[1]}))
         return result
 
     def delete_tournaments(self):
