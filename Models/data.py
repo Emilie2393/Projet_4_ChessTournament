@@ -19,11 +19,9 @@ class Data:
         if query == "all_players":
             for i in self.players:
                 players.append([i["firstname"], i["lastname"], i["birthdate"]])
-            print(sorted(players))
         if query == "tournament_players":
             for i in self.tournament_players:
                 players.append(i["firstname"] + " " + i["lastname"])
-            print(sorted(players))
         return sorted(players)
 
     def tours_list_encoder(self, name, tour):
@@ -34,6 +32,19 @@ class Data:
     def tours_list_insert(self, tours, name):
         data = Query()
         self.tournament.update({"tours_list": tours}, data["name"] == f"{name}")
+
+    def tours_list_serialize(self, tour, name):
+        data = Query()
+        serialized_tours = []
+        for i in range(len(tour.matches)):
+            player1 = tour.matches[i][0]
+            player2 = tour.matches[i][1]
+            game = {player1[0]: player1[1], player2[0]: player2[1]}
+            serialized_tours.append(game)
+        new_tour = {tour.name: serialized_tours}
+        self.tours_to_save.append(new_tour)
+        self.tournament.update({"tours_list": self.tours_to_save}, data["name"] == f"{name}")
+
 
     def players_insert(self, player):
         self.players.insert(player)
@@ -94,14 +105,15 @@ class Data:
         else:
             self.tournament.insert(tournament)
 
-    def update_tournament_start(self, name, players, start=0):
+    def update_tournament_data(self, name, players, start=0, end=0):
         data = Query()
         self.tournament.update({"players_list": players}, data["name"] == f"{name}")
         if start != 0:
             self.tournament.update({"start_date": start}, data["name"] == f"{name}")
+        if end != 0:
+            self.tournament.update({"end_date": end}, data["name"] == f"{name}")
 
     def update_tournament_tours(self, name, scores, prev_games, tour_nb):
-        print(self.scores)
         data = Query()
         self.tournament.update({"scores": scores}, data["name"] == f"{name}")
         self.tournament.update({"prev_games": prev_games}, data["name"] == f"{name}")

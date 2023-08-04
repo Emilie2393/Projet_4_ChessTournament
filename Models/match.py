@@ -14,7 +14,7 @@ class Match:
     def __repr__(self):
         return str(self)
 
+    def __getitem__(self, key):
+        return self.match[key]
 
-"""match_one = Match(new_player, 2, new_player2, 1)
-match_two = Match(new_player3, 1, new_player, 0)
-print("Match(Player(...), 2) : ", match_one.match)"""
+

@@ -44,7 +44,6 @@ class View:
         place = input("tapez le lieu du tournoi : ")
         return name, place
 
-
     def prompt_for_player(self):
         first_name = input("tapez le prenom du joueur : ")
         last_name = input("tapez le nom du joueur : ")
@@ -52,8 +51,15 @@ class View:
         return first_name, last_name, birthdate
 
     def get_score(self, player1, player2):
-        score_1 = float(input(f"tapez le score de {player1} : "))
-        score_2 = float(input(f"tapez le score du {player2} : "))
+        score_1 = 2
+        score_2 = 2
+        while score_1 or score_2 != "0" or "0.5" or "1":
+            try:
+                score_1 = float(input(f"tapez le score de {player1} : "))
+                score_2 = float(input(f"tapez le score du {player2} : "))
+                break
+            except ValueError:
+                print("Incorrect. Entrez 0, 0.5 ou 1")
         return score_1, score_2
 
     def next_tour(self):

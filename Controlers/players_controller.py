@@ -17,7 +17,5 @@ class PlayersController:
     def tournament_players(self, selected):
         get_player = Data()
         selection = get_player.get_datas(selected)
-        print(selection)
+        print("Votre choix : ", selection)
         return selection
-        """self.players_list.append(selection["firstname"])
-        print(self.players_list)"""
