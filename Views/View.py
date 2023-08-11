@@ -46,7 +46,7 @@ class View:
                        "3 - Revenir au menu \n")
         return choice
 
-    def data_players(self):
+    """def data_players(self):
         if len(self.data.tournament_players) > 0:
             to_print = self.data.players_desencoder("all_players")
             for player in to_print:
@@ -82,7 +82,7 @@ class View:
                     return False
         else:
             print("Il n'y a pas de tournoi enregistré")
-            return False
+            return False"""
 
     @staticmethod
     def prompt_for_tournament():

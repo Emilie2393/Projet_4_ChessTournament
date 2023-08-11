@@ -10,12 +10,71 @@ from datetime import datetime
 
 class TournamentController:
 
-    def __init__(self, view):
+    def __init__(self, view, data):
+        self.data = data
+        self.view = view
         self.tournament = []
         self.players: List[Player] = []
-        self.previous_players_list = []
-        self.view = view
-        self.scores = {}
+
+    def create_tournament(self):
+        self.get_tournament()
+        to_save = self.data.tournament_encoder(self.tournament)
+        self.data.save_tournament(to_save)
+        if not self.data.tournament_players:
+            print("Il n'y a pas de joueurs pour ce tournoi, merci d'en selectionner")
+        else:
+            print("Votre tournoi est créé et prêt à être selectionné")
+
+    def select_tournament(self):
+        if not self.data.tournament:
+            print("pas de tournoi enregistré, merci d'en créer un nouveau")
+        else:
+            for i in range(len(self.data.tournament.all())):
+                print(i + 1, self.data.tournament.all()[i])
+            status = self.stop_tournament("le choix du tournoi")
+            if status == "stop":
+                return
+            else:
+                tournament_choice = self.view.choose_tournament()
+                self.tournament_choice(tournament_choice)
+                print("Tournoi sélectionné : ", self.tournament)
+                print("data", self.data.get_tournament(tournament_choice))
+                if not self.tournament.players_list:
+                    if self.data.tournament_players:
+                        self.tournament.players_list = self.data.players_desencoder("tournament_players")
+                        print(self.data.players_desencoder("tournament_players"))
+                        status = self.stop_tournament("avec ces joueurs")
+                        if status == "stop":
+                            return
+                        if status == "players_menu":
+                            self.tournament.players_list = []
+                            self.data.delete_tournament_player()
+                            return True
+                        # tournament start
+                        else:
+                            self.data.update_tournament_data(self.tournament.name, self.tournament.players_list,
+                                                             datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+                            self.players = self.tournament.players_list
+                            self.new_tournament()
+                    else:
+                        print("merci de selectionner les joueurs de ce tournoi")
+                        return True
+                else:
+                    status = self.stop_tournament("le tournoi")
+                    if status == "stop":
+                        return
+                    else:
+                        self.data.update_tournament_data(self.tournament.name, self.tournament.players_list,
+                                                         datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+                        self.players = self.tournament.players_list
+                        self.new_tournament()
+
+    def del_tournament(self):
+        if not self.data.tournament:
+            print("pas de tournoi enregistré, merci d'en créer un nouveau")
+        else:
+            self.data.delete_tournaments()
+            print("Tournois supprimés")
 
     def tournament_choice(self, selected):
         data = Data()
@@ -55,66 +114,61 @@ class TournamentController:
 
     def init_scores(self):
         for i in self.players:
-            self.scores[i] = 0
-        print(self.scores)
+            self.data.scores[i] = 0
+        print(self.data.scores)
 
-    def check_previous_data(self, data, tournament, matches, tour, tour_progress):
+    def check_previous_data(self, tournament, matches, tour, tour_progress):
         if tournament.round == 1 and not tournament.tours_list:
             random.shuffle(self.players)
-            data.update_tournament_data(tournament.name, self.players)
+            self.data.update_tournament_data(tournament.name, self.players)
         if tournament.tours_list:
+            # if round is over, next round
             if len(tournament.tours_list[len(tournament.tours_list) - 1]
                    ["Round" + str(len(tournament.tours_list))]) > 3:
-                print("heyehfhz")
                 tour_progress = 0
-                data.tours_to_save = tournament.tours_list
+                self.data.tours_to_save = tournament.tours_list
                 self.sort_players()
+            # if round has already begun
             else:
-                if matches:
-                    for match in matches:
-                        keys = list(match.keys())
-                        values = list(match.values())
-                        deserialize = Match(keys[0], values[0], keys[1], values[1])
-                        tour.add_match(deserialize)
-                    for e in range(len(tournament.tours_list) - 1):
-                        data.tours_to_save.append(tournament.tours_list[e])
-                else:
-                    tour_progress = 0
-                    self.sort_players()
-                    data.tours_to_save = tournament.tours_list
+                for match in matches:
+                    keys = list(match.keys())
+                    values = list(match.values())
+                    deserialize = Match(keys[0], values[0], keys[1], values[1])
+                    tour.add_match(deserialize)
+                for e in range(len(tournament.tours_list) - 1):
+                    self.data.tours_to_save.append(tournament.tours_list[e])
         return tour_progress
 
     def start_matches(self, tour_nb, tour_progress, matches):
-        data = Data()
         tournament = self.tournament
         rank = len(self.players)
         tour = Tour("Round" + str(tour_nb))
         tour.matches = []
-        data.tours_to_save = []
-        self.previous_players_list = tournament.prev_games
-        tour_progress = self.check_previous_data(data, tournament, matches, tour, tour_progress)
+        self.data.tours_to_save = []
+        self.data.prev_games = tournament.prev_games
+        # init tour progress if round has already begun
+        tour_progress = self.check_previous_data(tournament, matches, tour, tour_progress)
+        # one round
         for i in range(tour_progress, rank, 2):
             player1 = self.players[i]
             player2 = self.players[i + 1]
             scores = self.view.get_score(player1, player2)
             match = Match(player1, scores[0], player2, scores[1])
             tour.add_match(match)
-            self.scores[player1] += scores[0]
-            self.scores[player2] += scores[1]
+            self.data.scores[player1] += scores[0]
+            self.data.scores[player2] += scores[1]
             status = self.stop_tournament("tour")
             if status == "stop":
                 break
             else:
                 continue
-        data.tours_list_serialize(tour, tournament.name)
+        self.data.tours_list_serialize(tour, tournament.name)
         if len(tour.matches) > 3:
             tournament.round += 1
         for i in self.players:
-            self.previous_players_list.append(i)
-        data.scores = self.scores
-        data.prev_games = self.previous_players_list
-        data.update_tournament_tours(tournament.name, data.scores, data.prev_games, tournament.round)
-        new = data.tournament_desencoder(data.check_tournament(tournament.name)[0])
+            self.data.prev_games.append(i)
+        self.data.update_tournament_tours(tournament.name, self.data.scores, self.data.prev_games, tournament.round)
+        new = self.data.tournament_desencoder(self.data.check_tournament(tournament.name)[0])
         self.tournament = Tournament(new[0], new[1], new[2], new[3], new[4], new[5],
                                      new[6], new[7], new[8])
         status = self.stop_tournament("le tournoi en cours ou l'enregistrer")
@@ -125,9 +179,9 @@ class TournamentController:
 
     def check_identical_matches(self, sorted_keys, start_list=0):
         len_sort_keys = len(sorted_keys)
-        len_prev_matches = int(len(self.previous_players_list) / 2)
+        len_prev_matches = int(len(self.data.prev_games) / 2)
         for i in range(start_list, len_prev_matches, 2):
-            old_match = self.previous_players_list[i], self.previous_players_list[i + 1]
+            old_match = self.data.prev_games[i], self.data.prev_games[i + 1]
             print("i", i, len_prev_matches, old_match)
             for e in range(0, len_sort_keys, 2):
                 new_match = sorted_keys[e], sorted_keys[e + 1]
@@ -144,12 +198,11 @@ class TournamentController:
         self.players = sorted_keys
 
     def sort_players(self):
-        sorted_scores = dict(sorted(self.scores.items(), key=lambda item: item[1], reverse=True))
+        sorted_scores = dict(sorted(self.data.scores.items(), key=lambda item: item[1], reverse=True))
         sorted_keys = list(sorted_scores.keys())
         self.check_identical_matches(sorted_keys)
 
     def new_tournament(self):
-        data = Data()
         self.init_scores()
         start = 1
         end = True
@@ -158,7 +211,7 @@ class TournamentController:
         in_process = 0
         if tours:
             start = start + len(tours)
-            self.scores = self.tournament.scores
+            self.data.scores = self.tournament.scores
             print(tours)
             if len(tours[len(tours) - 1]["Round" + str(len(tours))]) < 4:
                 in_process = 2 * len(tours[len(tours) - 1]["Round" + str(len(tours))])
@@ -168,12 +221,12 @@ class TournamentController:
             print("tour", tour, "inprocess", in_process, "games", games)
             tournament = self.start_matches(tour, in_process, games)
             if not tournament:
-                data.update_tournament_data(self.tournament.name, self.players)
+                self.data.update_tournament_data(self.tournament.name, self.players)
                 end = False
                 break
         if end:
             self.tournament.end_date = datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
-            data.update_tournament_data(self.tournament.name, [], 0, self.tournament.end_date)
-            sorted_scores = dict(sorted(self.scores.items(), key=lambda item: item[1],
+            self.data.update_tournament_data(self.tournament.name, [], 0, self.tournament.end_date)
+            sorted_scores = dict(sorted(self.data.scores.items(), key=lambda item: item[1],
                                         reverse=True))
             print(f"Le tournoi {self.tournament.name} est terminé ! \nVoici les scores : {sorted_scores}")

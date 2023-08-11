@@ -7,11 +7,12 @@ class Data:
     tournament_players = db.table('tournament_players')
     tournament = db.table('tournament')
     tours_to_save = []
-    scores = []
+    scores = {}
     prev_games = []
 
-    def players_encoder(self, player):
+    def players_serialize(self, player):
         data = {"firstname": player.first_name, "lastname": player.last_name, "birthdate": player.birthdate}
+        self.players.insert(data)
         return data
 
     def players_desencoder(self, query):
@@ -35,9 +36,6 @@ class Data:
         new_tour = {tour.name: serialized_tours}
         self.tours_to_save.append(new_tour)
         self.tournament.update({"tours_list": self.tours_to_save}, data["name"] == f"{name}")
-
-    def players_insert(self, player):
-        self.players.insert(player)
 
     def get_datas(self, name):
         data = self.players.get(doc_id=name)
