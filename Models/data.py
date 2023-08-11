@@ -24,15 +24,6 @@ class Data:
                 players.append(i["firstname"] + " " + i["lastname"])
         return sorted(players)
 
-    def tours_list_encoder(self, name, tour):
-        data = {name: tour}
-        self.tours_to_save.append(data)
-        print("to_savedata", self.tours_to_save)
-
-    def tours_list_insert(self, tours, name):
-        data = Query()
-        self.tournament.update({"tours_list": tours}, data["name"] == f"{name}")
-
     def tours_list_serialize(self, tour, name):
         data = Query()
         serialized_tours = []
@@ -44,7 +35,6 @@ class Data:
         new_tour = {tour.name: serialized_tours}
         self.tours_to_save.append(new_tour)
         self.tournament.update({"tours_list": self.tours_to_save}, data["name"] == f"{name}")
-
 
     def players_insert(self, player):
         self.players.insert(player)
@@ -64,15 +54,9 @@ class Data:
         else:
             print("complet")
 
-    def check_tournament_player(self):
-        if not self.tournament_players.all():
-            return False
-        else:
-            return True
-
     def delete_tournament_player(self):
         if not self.tournament_players.all():
-            return False
+            print("Il n'y a pas de pas de liste à supprimer")
         else:
             self.tournament_players.truncate()
 
@@ -98,12 +82,7 @@ class Data:
         return data
 
     def save_tournament(self, tournament):
-        data = Query()
-        print("save", tournament)
-        if tournament["tours_list"]:
-            self.tournament.update({"tours_list": tournament["tours_list"]}, data["name"] == f"{tournament['name']}")
-        else:
-            self.tournament.insert(tournament)
+        self.tournament.insert(tournament)
 
     def update_tournament_data(self, name, players, start=0, end=0):
         data = Query()

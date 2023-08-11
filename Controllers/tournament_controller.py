@@ -1,5 +1,4 @@
 import random
-
 from Models.player import Player
 from Models.match import Match
 from Models.tour import Tour
@@ -14,7 +13,6 @@ class TournamentController:
     def __init__(self, view):
         self.tournament = []
         self.players: List[Player] = []
-        self.tours_list = []
         self.previous_players_list = []
         self.view = view
         self.scores = {}
@@ -28,9 +26,9 @@ class TournamentController:
         self.tournament = tournament
 
     def get_tournament(self):
-        datas = self.view.prompt_for_tournament()
-        name = datas[0]
-        place = datas[1]
+        data = self.view.prompt_for_tournament()
+        name = data[0]
+        place = data[1]
         start_date = []
         end_date = []
         round = 1
@@ -41,7 +39,6 @@ class TournamentController:
         rounds_nb = 4
         tournament = Tournament(name, place, start_date, end_date, tours_list, round, players_list,
                                 scores, prev_games, rounds_nb)
-
         self.tournament = tournament
         return tournament
 
@@ -61,20 +58,11 @@ class TournamentController:
             self.scores[i] = 0
         print(self.scores)
 
-    def start_matches(self, tour_nb, tour_progress, matches):
-        data = Data()
-        tournament = self.tournament
+    def check_previous_data(self, data, tournament, matches, tour, tour_progress):
         if tournament.round == 1 and not tournament.tours_list:
             random.shuffle(self.players)
             data.update_tournament_data(tournament.name, self.players)
-        rank = len(self.players)
-        tour = Tour("Round" + str(tour_nb))
-        tour.matches = []
-        # tours_list = []
-        data.tours_to_save = []
-        self.previous_players_list = tournament.prev_games
         if tournament.tours_list:
-            print(tournament.tours_list[len(tournament.tours_list) - 1]["Round" + str(len(tournament.tours_list))])
             if len(tournament.tours_list[len(tournament.tours_list) - 1]
                    ["Round" + str(len(tournament.tours_list))]) > 3:
                 print("heyehfhz")
@@ -86,27 +74,31 @@ class TournamentController:
                     for match in matches:
                         keys = list(match.keys())
                         values = list(match.values())
-                        print(keys, values)
-                        # tours_list.append(match)
                         deserialize = Match(keys[0], values[0], keys[1], values[1])
                         tour.add_match(deserialize)
-                        print(tour.matches)
                     for e in range(len(tournament.tours_list) - 1):
                         data.tours_to_save.append(tournament.tours_list[e])
                 else:
                     tour_progress = 0
                     self.sort_players()
                     data.tours_to_save = tournament.tours_list
-        print("ne", tournament)
-        print(tournament.round)
+        return tour_progress
+
+    def start_matches(self, tour_nb, tour_progress, matches):
+        data = Data()
+        tournament = self.tournament
+        rank = len(self.players)
+        tour = Tour("Round" + str(tour_nb))
+        tour.matches = []
+        data.tours_to_save = []
+        self.previous_players_list = tournament.prev_games
+        tour_progress = self.check_previous_data(data, tournament, matches, tour, tour_progress)
         for i in range(tour_progress, rank, 2):
             player1 = self.players[i]
             player2 = self.players[i + 1]
             scores = self.view.get_score(player1, player2)
             match = Match(player1, scores[0], player2, scores[1])
-            # tours_list.append({player1: scores[0], player2: scores[1]})
             tour.add_match(match)
-            print(tour.matches)
             self.scores[player1] += scores[0]
             self.scores[player2] += scores[1]
             status = self.stop_tournament("tour")
@@ -119,16 +111,13 @@ class TournamentController:
             tournament.round += 1
         for i in self.players:
             self.previous_players_list.append(i)
-        status = self.stop_tournament("le tournoi en cours ou l'enregistrer")
-        # data.tours_list_encoder(tour.name, tours_list)
-        # data.tours_list_insert(data.tours_to_save, tournament.name)
         data.scores = self.scores
         data.prev_games = self.previous_players_list
-        print("Tournoi en cours : ", tournament.name, data.scores, data.prev_games, tournament.round)
         data.update_tournament_tours(tournament.name, data.scores, data.prev_games, tournament.round)
         new = data.tournament_desencoder(data.check_tournament(tournament.name)[0])
         self.tournament = Tournament(new[0], new[1], new[2], new[3], new[4], new[5],
                                      new[6], new[7], new[8])
+        status = self.stop_tournament("le tournoi en cours ou l'enregistrer")
         if status == "stop":
             return False
         else:
@@ -168,14 +157,15 @@ class TournamentController:
         games = []
         in_process = 0
         if tours:
-            print(tours)
             start = start + len(tours)
             self.scores = self.tournament.scores
+            print(tours)
             if len(tours[len(tours) - 1]["Round" + str(len(tours))]) < 4:
                 in_process = 2 * len(tours[len(tours) - 1]["Round" + str(len(tours))])
                 games = tours[len(tours) - 1]["Round" + str(len(tours))]
                 start = len(tours)
         for tour in range(start, 5):
+            print("tour", tour, "inprocess", in_process, "games", games)
             tournament = self.start_matches(tour, in_process, games)
             if not tournament:
                 data.update_tournament_data(self.tournament.name, self.players)

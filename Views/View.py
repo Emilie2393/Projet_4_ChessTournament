@@ -1,87 +1,134 @@
 class View:
+    def __init__(self, data):
+        self.data = data
 
-    def main_menu(self):
-        choice = input("selectionner votre choix : \n"
-                       "1 - menu joueur \n"
-                       "2 - menu tournoi \n"
-                       "3 - menu data \n")
+    @staticmethod
+    def main_menu():
+        choice = input("Menu principal : Tapez le numéro de votre choix : \n"
+                       "1 - Menu joueur \n"
+                       "2 - Menu tournoi \n"
+                       "3 - Menu data \n")
         return choice
 
-    def players_menu(self):
-        choice = input("selectionner votre choix : \n"
-                       "1 - créer des nouveaux joueurs \n"
-                       "2 - voir tous les joueurs \n"
-                       "3 - créer la liste des joueurs du tournoi \n"
-                       "4 - voir la liste des joueurs du tournoi \n"
-                       "5 - effacer la liste de joueurs du tournoi \n"
-                       "6 - retour au menu principal \n")
+    @staticmethod
+    def players_menu():
+        choice = input("Menu joueurs : Tapez le numéro de votre choix : \n"
+                       "1 - Créer des nouveaux joueurs \n"
+                       "2 - Voir tous les joueurs \n"
+                       "3 - Créer la liste des joueurs du tournoi \n"
+                       "4 - Voir la liste des joueurs du tournoi \n"
+                       "5 - Effacer la liste de joueurs du tournoi \n"
+                       "6 - Retour au menu principal \n")
         return choice
 
-    def tournament_menu(self):
-        choice = input("selectionner votre choix : \n"
-                       "1 - créer un nouveau tournoi \n"
-                       "2 - récupérer tournoi existant \n"
-                       "3 - supprimer les tournois \n"
-                       "4 - retour au menu principal \n")
+    @staticmethod
+    def tournament_menu():
+        choice = input("Menu tournoi : Tapez le numéro de votre choix : \n"
+                       "1 - Créer un nouveau tournoi \n"
+                       "2 - Récupérer tournoi existant \n"
+                       "3 - Supprimer les tournois \n"
+                       "4 - Retour au menu principal \n")
         return choice
 
-    def data_menu(self):
-        choice = input("selectionner votre choix : \n"
-                       "1 - afficher tous les joueurs \n"
-                       "2 - afficher tous les tournois \n"
-                       "3 - retour au menu principal \n")
+    @staticmethod
+    def data_menu():
+        choice = input("Menu Data - Tapez le numéro de votre choix : \n"
+                       "1 - Afficher tous les joueurs \n"
+                       "2 - Afficher tous les tournois \n"
+                       "3 - Retour au menu principal \n")
         return choice
 
-    def data_tournament_menu(self):
-        choice = input("selectionner votre choix : \n"
-                       "1 - afficher les joueurs de ce tournoi \n"
-                       "2 - afficher les tours du tournoi \n"
-                       "3 - revenir au menu \n")
+    @staticmethod
+    def data_tournament_menu(name):
+        choice = input(f"Menu Data {name} - Tapez le numéro de votre choix : \n"
+                       "1 - Afficher les joueurs de ce tournoi \n"
+                       "2 - Afficher les tours du tournoi \n"
+                       "3 - Revenir au menu \n")
         return choice
 
-    def prompt_for_tournament(self):
-        name = input("tapez le nom du tournoi : ")
-        place = input("tapez le lieu du tournoi : ")
+    def data_players(self):
+        if len(self.data.tournament_players) > 0:
+            to_print = self.data.players_desencoder("all_players")
+            for player in to_print:
+                print(player)
+        else:
+            print("Il n'y a pas de joueurs enregistrés")
+
+    def data_tournament(self):
+        details_choice = 0
+        if len(self.data.tournament) > 0:
+            for i in range(len(self.data.tournament.all())):
+                print(i + 1, self.data.tournament_desencoder(self.data.tournament.all()[i])[0])
+            tournament_choice = self.choose_tournament()
+            selected = self.data.tournament_desencoder(self.data.get_tournament(tournament_choice))
+            if not selected[2]:
+                print(selected[0], f"\n{selected[1]}", "\nCe tournoi n'a pas commencé")
+            else:
+                print(selected, "\n", selected[1])
+                print(selected[0], "\nDate début: ", selected[2], "\nDate fin: ", selected[3])
+            while details_choice != "1" or "2" or "3":
+                details_choice = self.data_tournament_menu(selected[0])
+                if details_choice == "1":
+                    if not selected[6]:
+                        print("Il n'y a pas encore de joueurs pour ce tournoi")
+                    else:
+                        print(sorted(selected[6]))
+                if details_choice == "2":
+                    if not selected[4]:
+                        print("Il n'y a pas encore de tours pour ce tournoi")
+                    else:
+                        print(selected[4])
+                if details_choice == "3":
+                    return False
+        else:
+            print("Il n'y a pas de tournoi enregistré")
+            return False
+
+    @staticmethod
+    def prompt_for_tournament():
+        name = input("Tapez le nom du tournoi : ")
+        place = input("Tapez le lieu du tournoi : ")
         return name, place
 
-    def prompt_for_player(self):
-        first_name = input("tapez le prenom du joueur : ")
-        last_name = input("tapez le nom du joueur : ")
-        birthdate = input("tapez la naissance du joueur : ")
+    @staticmethod
+    def prompt_for_player():
+        first_name = input("Entrer le prenom du joueur : ")
+        last_name = input("Entrer le nom du joueur : ")
+        birthdate = input("Entrer la naissance du joueur : ")
         return first_name, last_name, birthdate
 
-    def get_score(self, player1, player2):
+    @staticmethod
+    def get_score(player1, player2):
         score_1 = 2
         score_2 = 2
         while score_1 or score_2 != "0" or "0.5" or "1":
             try:
-                score_1 = float(input(f"tapez le score de {player1} : "))
-                score_2 = float(input(f"tapez le score du {player2} : "))
+                score_1 = float(input(f"Entrer le score de {player1} : "))
+                score_2 = float(input(f"Entrer le score du {player2} : "))
                 break
             except ValueError:
-                print("Incorrect. Entrez 0, 0.5 ou 1")
+                print("Incorrect. Entrer 0, 0.5 ou 1")
         return score_1, score_2
 
-    def next_tour(self):
-        wait = input("Tapez Entrée quand vous êtes prêts pour le prochain round : ")
-
-    def continue_or_not(self, state):
-        choice = 0
+    @staticmethod
+    def continue_or_not(state):
         if state == "avec ces joueurs":
-            choice = input(f"souhaitez-vous continuer {state} ? \n"
-                           "1 - continuer \n"
-                           "2 - pause \n"
-                           "3 - choisir d'autres joueurs \n")
+            choice = input(f"Souhaitez-vous continuer {state} ? \n"
+                           "1 - Continuer \n"
+                           "2 - Pause \n"
+                           "3 - Choisir d'autres joueurs \n")
         else:
-            choice = input(f"souhaitez-vous continuer {state} ? \n"
-                           "1 - continuer \n"
-                           "2 - pause \n")
+            choice = input(f"Souhaitez-vous continuer {state} ? \n"
+                           "1 - Continuer \n"
+                           "2 - Pause \n")
         return choice
 
-    def choose_players(self):
-        choice = input("merci d'inscrire le numéro du joueur souhaité : ")
+    @staticmethod
+    def choose_players():
+        choice = input("Merci d'entrer le numéro du joueur souhaité : ")
         return choice
 
-    def choose_tournament(self):
-        choice = input("merci d'inscrire le numéro du tournoi : ")
+    @staticmethod
+    def choose_tournament():
+        choice = input("Merci d'entrer le numéro du tournoi : ")
         return choice
