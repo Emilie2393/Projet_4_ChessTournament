@@ -6,7 +6,7 @@ class ReportsController:
 
     def data_players(self):
         if len(self.data.tournament_players) > 0:
-            to_print = self.data.players_desencoder("all_players")
+            to_print = self.data.players_deserialize("all_players")
             for player in to_print:
                 print(player)
         else:
@@ -35,7 +35,9 @@ class ReportsController:
                     if not selected[4]:
                         print("Il n'y a pas encore de tours pour ce tournoi")
                     else:
-                        print(selected[4])
+                        for f in selected[4]:
+                            print(f)
+                        # print(selected[4])
                 if details_choice == "3":
                     return
         else:
