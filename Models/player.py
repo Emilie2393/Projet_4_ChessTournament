@@ -13,5 +13,3 @@ class Player:
 
     def __getitem__(self, key):
         return self.first_name[key]
-
-

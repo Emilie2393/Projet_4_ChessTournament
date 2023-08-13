@@ -14,6 +14,3 @@ class Tour:
 
     def add_match(self, new):
         self.matches.append(new)
-
-
-

@@ -3,7 +3,6 @@ from Models.player import Player
 from Models.match import Match
 from Models.tour import Tour
 from Models.tournament import Tournament
-from Models.data import Data
 from typing import List
 from datetime import datetime
 
@@ -80,6 +79,7 @@ class TournamentController:
         selected = self.data.tournament_deserialize(selection)
         tournament = Tournament(selected[0], selected[1], selected[2], selected[3], selected[4], selected[5],
                                 selected[6], selected[7], selected[8], selected[9])
+        print("yooo", tournament)
         self.tournament = tournament
 
     def get_tournament(self):
@@ -137,6 +137,15 @@ class TournamentController:
                     self.data.tours_to_save.append(tournament.tours_list[e])
         return tour_progress
 
+    def one_round(self, tour, i):
+        player1 = self.players[i]
+        player2 = self.players[i + 1]
+        scores = self.view.get_score(player1, player2)
+        match = Match(player1, scores[0], player2, scores[1])
+        tour.add_match(match)
+        self.data.scores[player1] += scores[0]
+        self.data.scores[player2] += scores[1]
+
     def start_matches(self, tour_nb, tour_progress, matches):
         tournament = self.tournament
         rank = len(self.players)
@@ -148,18 +157,13 @@ class TournamentController:
         tour_progress = self.check_previous_data(tournament, matches, tour, tour_progress)
         # one round
         for i in range(tour_progress, rank, 2):
-            player1 = self.players[i]
-            player2 = self.players[i + 1]
-            scores = self.view.get_score(player1, player2)
-            match = Match(player1, scores[0], player2, scores[1])
-            tour.add_match(match)
-            self.data.scores[player1] += scores[0]
-            self.data.scores[player2] += scores[1]
+            self.one_round(tour, i)
             status = self.stop_tournament("tour")
             if status == "stop":
                 break
             else:
                 continue
+        # save round into data
         self.data.tours_list_serialize(tour, tournament.name)
         if len(tour.matches) > 3:
             tournament.round += 1
@@ -180,30 +184,24 @@ class TournamentController:
         len_prev_matches = int(len(self.data.prev_games) / 2)
         for i in range(start_list, len_prev_matches, 2):
             old_match = self.data.prev_games[i], self.data.prev_games[i + 1]
-            print("i", i, len_prev_matches, old_match)
             for e in range(0, len_sort_keys, 2):
                 new_match = sorted_keys[e], sorted_keys[e + 1]
-                print("avant", sorted_keys)
                 if new_match == old_match and e < (len_sort_keys - 2):
                     sorted_keys[e], sorted_keys[e + 2] = sorted_keys[e + 2], sorted_keys[e]
-                    print("apres", sorted_keys)
                     self.check_identical_matches(sorted_keys, start_list=i)
                 if new_match == old_match and e > (len_sort_keys - 2):
                     sorted_keys[e], sorted_keys[e - 2] = sorted_keys[e - 2], sorted_keys[e]
-                    print("apres", sorted_keys)
-                print("e", new_match)
-        print("fin", sorted_keys)
         self.players = sorted_keys
 
     def sort_players(self):
         sorted_scores = dict(sorted(self.data.scores.items(), key=lambda item: item[1], reverse=True))
         sorted_keys = list(sorted_scores.keys())
+        print(sorted_scores)
+        print(sorted_keys)
         self.check_identical_matches(sorted_keys)
 
     def new_tournament(self):
-        self.init_scores()
         start = 1
-        end = True
         tours = self.tournament.tours_list
         games = []
         in_process = 0
@@ -215,6 +213,9 @@ class TournamentController:
                 in_process = 2 * len(tours[len(tours) - 1]["Round" + str(len(tours))])
                 games = tours[len(tours) - 1]["Round" + str(len(tours))]
                 start = len(tours)
+        else:
+            self.init_scores()
+        end = True
         for tour in range(start, 5):
             print("tour", tour, "inprocess", in_process, "games", games)
             tournament = self.start_matches(tour, in_process, games)

@@ -14,7 +14,8 @@ class Tournament:
         self.rounds_nb = rounds_nb
 
     def __str__(self):
-        return f"{[self.name, self.place, self.start_date, self.end_date, self.tours_list, self.round, self.players_list, self.scores, self.rounds_nb]}"
+        return f"{self.name}, {self.place}, {self.start_date}, {self.end_date}, {self.tours_list}" \
+               f"{self.round}, {self.players_list}, {self.scores}, {self.rounds_nb}"
 
     def __repr__(self):
         return str(self)

@@ -64,5 +64,3 @@ class PlayersController:
 
     def del_tournament_players(self):
         self.data.delete_tournament_player()
-
-

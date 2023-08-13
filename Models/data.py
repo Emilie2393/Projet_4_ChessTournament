@@ -92,7 +92,6 @@ class Data:
         self.tournament.update({"scores": scores}, data["name"] == f"{name}")
         self.tournament.update({"prev_games": prev_games}, data["name"] == f"{name}")
         self.tournament.update({"round": tour_nb}, data["name"] == f"{name}")
-        print(self.tournament.all())
 
     def check_tournament(self, name):
         data = Query()

@@ -1,5 +1,3 @@
-#from Player import new_player, new_player2, new_player3
-
 
 class Match:
 
@@ -16,5 +14,3 @@ class Match:
 
     def __getitem__(self, key):
         return self.match[key]
-
-

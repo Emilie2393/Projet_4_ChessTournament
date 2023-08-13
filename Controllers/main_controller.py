@@ -59,10 +59,10 @@ class MainController:
             if choice == "4":
                 self.first_menu()
 
-    def data_menu(self):
+    def reports_menu(self):
         choice = 0
         while choice != "1" or "2" or "3":
-            choice = self.view.data_menu()
+            choice = self.view.reports_menu()
             if choice == "1":
                 # see players
                 self.reports.data_players()
@@ -71,4 +71,3 @@ class MainController:
                 self.reports.data_tournament()
             if choice == "3":
                 self.first_menu()
-                break

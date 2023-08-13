@@ -46,7 +46,6 @@ class View:
                        "3 - Revenir au menu \n")
         return choice
 
-
     @staticmethod
     def prompt_for_tournament():
         name = input("Tapez le nom du tournoi : ")
