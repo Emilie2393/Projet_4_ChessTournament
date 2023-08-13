@@ -1,6 +1,4 @@
 class View:
-    def __init__(self, data):
-        self.data = data
 
     @staticmethod
     def main_menu():

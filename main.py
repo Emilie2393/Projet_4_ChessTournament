@@ -8,7 +8,7 @@ from Views.View import View
 
 def main():
     data = Data()
-    view = View(data)
+    view = View()
     tournament = TournamentController(view, data)
     players = PlayersController(view, data, tournament)
     reports = ReportsController(view, data)
