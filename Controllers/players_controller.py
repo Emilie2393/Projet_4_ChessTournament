@@ -22,7 +22,7 @@ class PlayersController:
         if not self.data.players:
             print("la liste est vide, merci de créer des joueurs")
         else:
-            to_print = self.data.players_desencoder("all_players")
+            to_print = self.data.players_deserialize("all_players")
             for player in to_print:
                 print(player[0], player[1])
 
@@ -31,7 +31,7 @@ class PlayersController:
         # register players in json
         while status != "stop":
             self.get_new_players()
-            self.data.players_desencoder("all_players")
+            self.data.players_deserialize("all_players")
             status = self.tournament.stop_tournament("à enregistrer des joueurs ?")
 
     def associate_players(self):
@@ -44,7 +44,7 @@ class PlayersController:
                 print("Ce joueur est déjà dans la liste des joueurs du tournoi")
             else:
                 self.data.save_tournament_player(name)
-        self.tournament.players = self.data.players_desencoder("tournament_players")
+        self.tournament.players = self.data.players_deserialize("tournament_players")
 
     def init_tournament_players(self):
         if not self.data.players:
@@ -60,7 +60,7 @@ class PlayersController:
         if not self.data.tournament_players:
             print("il n'y a pas de liste enregistrée")
         else:
-            print(self.data.players_desencoder("tournament_players"))
+            print(self.data.players_deserialize("tournament_players"))
 
     def del_tournament_players(self):
         self.data.delete_tournament_player()

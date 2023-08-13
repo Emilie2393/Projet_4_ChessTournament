@@ -1,5 +1,3 @@
-from datetime import datetime
-
 
 class MainController:
 
@@ -66,8 +64,10 @@ class MainController:
         while choice != "1" or "2" or "3":
             choice = self.view.data_menu()
             if choice == "1":
+                # see players
                 self.reports.data_players()
             if choice == "2":
+                # see tournament details
                 self.reports.data_tournament()
             if choice == "3":
                 self.first_menu()

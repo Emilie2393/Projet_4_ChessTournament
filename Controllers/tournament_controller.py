@@ -18,8 +18,7 @@ class TournamentController:
 
     def create_tournament(self):
         self.get_tournament()
-        to_save = self.data.tournament_encoder(self.tournament)
-        self.data.save_tournament(to_save)
+        self.data.tournament_serialize(self.tournament)
         if not self.data.tournament_players:
             print("Il n'y a pas de joueurs pour ce tournoi, merci d'en selectionner")
         else:
@@ -41,8 +40,8 @@ class TournamentController:
                 print("data", self.data.get_tournament(tournament_choice))
                 if not self.tournament.players_list:
                     if self.data.tournament_players:
-                        self.tournament.players_list = self.data.players_desencoder("tournament_players")
-                        print(self.data.players_desencoder("tournament_players"))
+                        self.tournament.players_list = self.data.players_deserialize("tournament_players")
+                        print(self.data.players_deserialize("tournament_players"))
                         status = self.stop_tournament("avec ces joueurs")
                         if status == "stop":
                             return
@@ -77,9 +76,8 @@ class TournamentController:
             print("Tournois supprimés")
 
     def tournament_choice(self, selected):
-        data = Data()
-        selection = data.get_tournament(selected)
-        selected = data.tournament_desencoder(selection)
+        selection = self.data.get_tournament(selected)
+        selected = self.data.tournament_deserialize(selection)
         tournament = Tournament(selected[0], selected[1], selected[2], selected[3], selected[4], selected[5],
                                 selected[6], selected[7], selected[8], selected[9])
         self.tournament = tournament
@@ -168,7 +166,7 @@ class TournamentController:
         for i in self.players:
             self.data.prev_games.append(i)
         self.data.update_tournament_tours(tournament.name, self.data.scores, self.data.prev_games, tournament.round)
-        new = self.data.tournament_desencoder(self.data.check_tournament(tournament.name)[0])
+        new = self.data.tournament_deserialize(self.data.check_tournament(tournament.name)[0])
         self.tournament = Tournament(new[0], new[1], new[2], new[3], new[4], new[5],
                                      new[6], new[7], new[8])
         status = self.stop_tournament("le tournoi en cours ou l'enregistrer")

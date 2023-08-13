@@ -15,7 +15,7 @@ class Data:
         self.players.insert(data)
         return data
 
-    def players_desencoder(self, query):
+    def players_deserialize(self, query):
         players = []
         if query == "all_players":
             for i in self.players:
@@ -58,14 +58,14 @@ class Data:
         else:
             self.tournament_players.truncate()
 
-    def tournament_encoder(self, tournament):
+    def tournament_serialize(self, tournament):
         data = {"name": tournament.name, "place": tournament.place, "start_date": tournament.start_date,
                 "end_date": tournament.end_date, "tours_list": tournament.tours_list,
                 "round": tournament.round, "players_list": tournament.players_list, "scores": tournament.scores,
                 "prev_games": tournament.prev_games, "rounds_nb": tournament.rounds_nb}
-        return data
+        self.tournament.insert(data)
 
-    def tournament_desencoder(self, tournament):
+    def tournament_deserialize(self, tournament):
         name = tournament["name"]
         place = tournament["place"]
         start_date = tournament["start_date"]
@@ -78,9 +78,6 @@ class Data:
         tours_list = tournament["tours_list"]
         data = [name, place, start_date, end_date, tours_list, round, players_list, scores, prev_games, rounds_nb]
         return data
-
-    def save_tournament(self, tournament):
-        self.tournament.insert(tournament)
 
     def update_tournament_data(self, name, players, start=0, end=0):
         data = Query()
@@ -100,11 +97,6 @@ class Data:
     def check_tournament(self, name):
         data = Query()
         result = self.tournament.search(data["name"] == f"{name}")
-        return result
-
-    def find_full_player(self, name):
-        split_name = name.split()
-        result = self.players.search(Query().fragment({'firstname': split_name[0], 'lastname': split_name[1]}))
         return result
 
     def delete_tournaments(self):

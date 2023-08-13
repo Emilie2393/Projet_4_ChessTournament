@@ -16,9 +16,9 @@ class ReportsController:
         details_choice = 0
         if len(self.data.tournament) > 0:
             for i in range(len(self.data.tournament.all())):
-                print(i + 1, self.data.tournament_desencoder(self.data.tournament.all()[i])[0])
+                print(i + 1, self.data.tournament_deserialize(self.data.tournament.all()[i])[0])
             tournament_choice = self.view.choose_tournament()
-            selected = self.data.tournament_desencoder(self.data.get_tournament(tournament_choice))
+            selected = self.data.tournament_deserialize(self.data.get_tournament(tournament_choice))
             if not selected[2]:
                 print(selected[0], f"\n{selected[1]}", "\nCe tournoi n'a pas commencé")
             else:
