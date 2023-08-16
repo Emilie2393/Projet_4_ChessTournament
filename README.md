@@ -25,3 +25,6 @@
 1- You will see this "!--" if you forget to do something : associate message will guide you  
 2- After each round, tournament players will be sorted by highest score. They will be associated for next match if they never played together before.  
 3- Round number is automatically set to 4  
+
+## Flake8
+To generate a new repport, enter " flake8 --format=html --htmldir=flake-report " in terminal and check it directly in the file
