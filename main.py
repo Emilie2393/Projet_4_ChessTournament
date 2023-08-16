@@ -16,4 +16,5 @@ def main():
     menu.first_menu()
 
 
-main()
+if __name__ == "__main__":
+    main()
