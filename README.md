@@ -6,7 +6,7 @@
 
 ## Players menu --
 1- Create some players
-2- Add players to your tournament players list : they will play in tournament you'll create
+2- Add players to your tournament players list (8 minimum) : they will play in tournament you'll create
 3- Check your players list or your tournament players list, add some players or delete your tournament players list
 
 ## Tournament menu --
@@ -20,3 +20,8 @@
 1- Check details about all players by alphabetical order of their first name
 2- Check details about tournament
 3- Once you found the tournament of your choice, check details about their rounds or their players
+
+## Important to play --
+1- You will see this "!--" if you forget to do something : associate message will guide you
+2- After each round, tournament players will be sorted by highest score. They will be associated for next match if they never played together before.
+3- Round number is automatically set to 4
