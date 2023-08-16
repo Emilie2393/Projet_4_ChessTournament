@@ -19,13 +19,13 @@ class TournamentController:
         self.get_tournament()
         self.data.tournament_serialize(self.tournament)
         if not self.data.tournament_players:
-            print("Il n'y a pas de joueurs pour ce tournoi, merci d'en selectionner")
+            print("!-- Il n'y a pas de joueurs pour ce tournoi, merci d'en selectionner au menu joueurs")
         else:
             print("Votre tournoi est créé et prêt à être selectionné")
 
     def select_tournament(self):
         if not self.data.tournament:
-            print("pas de tournoi enregistré, merci d'en créer un nouveau")
+            print("!-- Il n'y a pas de tournoi enregistré, merci d'en créer un nouveau")
         else:
             for i in range(len(self.data.tournament.all())):
                 print(i + 1, self.data.tournament.all()[i])
@@ -36,7 +36,6 @@ class TournamentController:
                 tournament_choice = self.view.choose_tournament()
                 self.tournament_choice(tournament_choice)
                 print("Tournoi sélectionné : ", self.tournament)
-                print("data", self.data.get_tournament(tournament_choice))
                 if not self.tournament.players_list:
                     if self.data.tournament_players:
                         self.tournament.players_list = self.data.players_deserialize("tournament_players")
@@ -55,7 +54,7 @@ class TournamentController:
                             self.players = self.tournament.players_list
                             self.new_tournament()
                     else:
-                        print("merci de selectionner les joueurs de ce tournoi")
+                        print("!-- Il n'y a pas de joueurs pour ce tournoi, merci d'en selectionner au menu joueurs")
                         return True
                 else:
                     status = self.stop_tournament("le tournoi")
@@ -69,7 +68,7 @@ class TournamentController:
 
     def del_tournament(self):
         if not self.data.tournament:
-            print("pas de tournoi enregistré, merci d'en créer un nouveau")
+            print("!-- Il n'y a pas de tournoi enregistré, merci d'en créer un nouveau")
         else:
             self.data.delete_tournaments()
             print("Tournois supprimés")
@@ -79,7 +78,6 @@ class TournamentController:
         selected = self.data.tournament_deserialize(selection)
         tournament = Tournament(selected[0], selected[1], selected[2], selected[3], selected[4], selected[5],
                                 selected[6], selected[7], selected[8], selected[9])
-        print("yooo", tournament)
         self.tournament = tournament
 
     def get_tournament(self):
@@ -169,8 +167,10 @@ class TournamentController:
             tournament.round += 1
         for i in self.players:
             self.data.prev_games.append(i)
+        # save new scores, games already played, and round state
         self.data.update_tournament_tours(tournament.name, self.data.scores, self.data.prev_games, tournament.round)
         new = self.data.tournament_deserialize(self.data.check_tournament(tournament.name)[0])
+        # init tournament object with new data
         self.tournament = Tournament(new[0], new[1], new[2], new[3], new[4], new[5],
                                      new[6], new[7], new[8])
         status = self.stop_tournament("le tournoi en cours ou l'enregistrer")
@@ -182,6 +182,7 @@ class TournamentController:
     def check_identical_matches(self, sorted_keys, start_list=0):
         len_sort_keys = len(sorted_keys)
         len_prev_matches = int(len(self.data.prev_games) / 2)
+        # compare old games with sorted players list
         for i in range(start_list, len_prev_matches, 2):
             old_match = self.data.prev_games[i], self.data.prev_games[i + 1]
             for e in range(0, len_sort_keys, 2):
@@ -189,6 +190,7 @@ class TournamentController:
                 if new_match == old_match and e < (len_sort_keys - 2):
                     sorted_keys[e], sorted_keys[e + 2] = sorted_keys[e + 2], sorted_keys[e]
                     self.check_identical_matches(sorted_keys, start_list=i)
+                    # last pair of sorted players
                 if new_match == old_match and e > (len_sort_keys - 2):
                     sorted_keys[e], sorted_keys[e - 2] = sorted_keys[e - 2], sorted_keys[e]
         self.players = sorted_keys
@@ -196,8 +198,6 @@ class TournamentController:
     def sort_players(self):
         sorted_scores = dict(sorted(self.data.scores.items(), key=lambda item: item[1], reverse=True))
         sorted_keys = list(sorted_scores.keys())
-        print(sorted_scores)
-        print(sorted_keys)
         self.check_identical_matches(sorted_keys)
 
     def new_tournament(self):
@@ -205,10 +205,11 @@ class TournamentController:
         tours = self.tournament.tours_list
         games = []
         in_process = 0
+        # if tournament has already begun init new start
         if tours:
             start = start + len(tours)
             self.data.scores = self.tournament.scores
-            print(tours)
+            # if round is not over, init games
             if len(tours[len(tours) - 1]["Round" + str(len(tours))]) < 4:
                 in_process = 2 * len(tours[len(tours) - 1]["Round" + str(len(tours))])
                 games = tours[len(tours) - 1]["Round" + str(len(tours))]
@@ -217,7 +218,6 @@ class TournamentController:
             self.init_scores()
         end = True
         for tour in range(start, 5):
-            print("tour", tour, "inprocess", in_process, "games", games)
             tournament = self.start_matches(tour, in_process, games)
             if not tournament:
                 self.data.update_tournament_data(self.tournament.name, self.players)

@@ -39,6 +39,8 @@ class MainController:
             if choice == "5":
                 self.players.del_tournament_players()
             if choice == "6":
+                self.players.del_players()
+            if choice == "7":
                 self.first_menu()
 
     def tournament_menu(self):

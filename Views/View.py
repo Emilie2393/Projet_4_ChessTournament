@@ -16,7 +16,8 @@ class View:
                        "3 - Créer la liste des joueurs du tournoi \n"
                        "4 - Voir la liste des joueurs du tournoi \n"
                        "5 - Effacer la liste de joueurs du tournoi \n"
-                       "6 - Retour au menu principal \n")
+                       "6 - Effacer la liste des joueurs \n"
+                       "7 - Retour au menu principal \n")
         return choice
 
     @staticmethod
@@ -55,7 +56,8 @@ class View:
         first_name = input("Entrer le prenom du joueur : ")
         last_name = input("Entrer le nom du joueur : ")
         birthdate = input("Entrer la naissance du joueur : ")
-        return first_name, last_name, birthdate
+        code = input("Entrer l'identifiant national du joueur : ")
+        return first_name, last_name, birthdate, code
 
     @staticmethod
     def get_score(player1, player2):

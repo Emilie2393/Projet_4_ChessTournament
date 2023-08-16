@@ -11,7 +11,8 @@ class Data:
     prev_games = []
 
     def players_serialize(self, player):
-        data = {"firstname": player.first_name, "lastname": player.last_name, "birthdate": player.birthdate}
+        data = {"firstname": player.first_name, "lastname": player.last_name, "birthdate": player.birthdate,
+                "code": player.code}
         self.players.insert(data)
         return data
 
@@ -19,7 +20,7 @@ class Data:
         players = []
         if query == "all_players":
             for i in self.players:
-                players.append([i["firstname"], i["lastname"], i["birthdate"]])
+                players.append([i["firstname"], i["lastname"], i["birthdate"], i["code"]])
         if query == "tournament_players":
             for i in self.tournament_players:
                 players.append(i["firstname"] + " " + i["lastname"])
@@ -50,13 +51,19 @@ class Data:
             self.tournament_players.insert(player)
             print(self.tournament_players.all())
         else:
-            print("complet")
+            print("Complet")
 
     def delete_tournament_player(self):
         if not self.tournament_players.all():
-            print("Il n'y a pas de pas de liste à supprimer")
+            print("!-- Il n'y a pas de pas de liste à supprimer")
         else:
             self.tournament_players.truncate()
+
+    def delete_player(self):
+        if not self.players.all():
+            print("!-- Il n'y a pas de pas de liste à supprimer")
+        else:
+            self.players.truncate()
 
     def tournament_serialize(self, tournament):
         data = {"name": tournament.name, "place": tournament.place, "start_date": tournament.start_date,
