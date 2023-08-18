@@ -1,11 +1,12 @@
 # Projet_4_ChessTournament
 
 # 1- Install venv and copy requirements.txt
-On terminal enter : 
-python -m venv "name of your choice"
-For Windows terminal : "name of your choice"\Scripts\activate.bat
-Powershell terminal : "name of your choice"\Scripts\activate
-Then enter : pip install -r requirements.txt
+On terminal enter :  
+python -m venv "name of your choice"  
+For Windows terminal : "name of your choice"\Scripts\activate.bat  
+Powershell terminal : "name of your choice"\Scripts\activate  
+Then enter : pip install -r requirements.txt  
+Press play
 
 # 2- You can start by players menu or tournament menu
 
