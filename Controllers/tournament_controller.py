@@ -19,27 +19,27 @@ class TournamentController:
         self.get_tournament()
         self.data.tournament_serialize(self.tournament)
         if not self.data.tournament_players:
-            print("!-- Il n'y a pas de joueurs pour ce tournoi, merci d'en selectionner au menu joueurs")
+            self.view.show_msg("!-- Il n'y a pas de joueurs pour ce tournoi, merci d'en selectionner au menu joueurs")
         else:
-            print("Votre tournoi est créé et prêt à être selectionné")
+            self.view.show_msg("Votre tournoi est créé et prêt à être selectionné")
 
     def select_tournament(self):
         if not self.data.tournament:
-            print("!-- Il n'y a pas de tournoi enregistré, merci d'en créer un nouveau")
+            self.view.show_msg("!-- Il n'y a pas de tournoi enregistré, merci d'en créer un nouveau")
         else:
             for i in range(len(self.data.tournament.all())):
-                print(i + 1, self.data.tournament.all()[i])
+                self.view.show_msg(i + 1, self.data.tournament.all()[i])
             status = self.stop_tournament("le choix du tournoi")
             if status == "stop":
                 return
             else:
                 tournament_choice = self.view.choose_tournament()
                 self.tournament_choice(tournament_choice)
-                print("Tournoi sélectionné : ", self.tournament)
+                self.view.show_msg("Tournoi sélectionné : ", self.tournament)
                 if not self.tournament.players_list:
                     if self.data.tournament_players:
                         self.tournament.players_list = self.data.players_deserialize("tournament_players")
-                        print(self.data.players_deserialize("tournament_players"))
+                        self.view.show_msg(self.data.players_deserialize("tournament_players"))
                         status = self.stop_tournament("avec ces joueurs")
                         if status == "stop":
                             return
@@ -54,7 +54,7 @@ class TournamentController:
                             self.players = self.tournament.players_list
                             self.new_tournament()
                     else:
-                        print("!-- Il n'y a pas de joueurs pour ce tournoi, merci d'en selectionner au menu joueurs")
+                        self.view.show_msg("!-- Il n'y a pas de joueurs pour ce tournoi, merci d'en selectionner au menu joueurs")
                         return True
                 else:
                     status = self.stop_tournament("le tournoi")
@@ -68,10 +68,10 @@ class TournamentController:
 
     def del_tournament(self):
         if not self.data.tournament:
-            print("!-- Il n'y a pas de tournoi enregistré, merci d'en créer un nouveau")
+            self.view.show_msg("!-- Il n'y a pas de tournoi enregistré, merci d'en créer un nouveau")
         else:
             self.data.delete_tournaments()
-            print("Tournois supprimés")
+            self.view.show_msg("Tournois supprimés")
 
     def tournament_choice(self, selected):
         selection = self.data.get_tournament(selected)
@@ -111,7 +111,6 @@ class TournamentController:
     def init_scores(self):
         for i in self.players:
             self.data.scores[i] = 0
-        print(self.data.scores)
 
     def check_previous_data(self, tournament, matches, tour, tour_progress):
         if tournament.round == 1 and not tournament.tours_list:
@@ -136,6 +135,7 @@ class TournamentController:
         return tour_progress
 
     def one_round(self, tour, i):
+        self.view.show_msg("Voici la liste des matchs à suivre: ", self.players)
         player1 = self.players[i]
         player2 = self.players[i + 1]
         scores = self.view.get_score(player1, player2)
@@ -228,4 +228,5 @@ class TournamentController:
             self.data.update_tournament_data(self.tournament.name, [], 0, self.tournament.end_date)
             sorted_scores = dict(sorted(self.data.scores.items(), key=lambda item: item[1],
                                         reverse=True))
-            print(f"Le tournoi {self.tournament.name} est terminé ! \nVoici les scores : {sorted_scores}")
+            self.view.show_msg((f"Le tournoi {self.tournament.name} est "
+                                f"terminé ! \nVoici les scores : {sorted_scores}"))

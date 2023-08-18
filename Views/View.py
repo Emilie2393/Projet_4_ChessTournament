@@ -9,6 +9,10 @@ class View:
         return choice
 
     @staticmethod
+    def show_msg(msg):
+        print(msg)
+
+    @staticmethod
     def players_menu():
         choice = input("Menu joueurs : Tapez le numéro de votre choix : \n"
                        "1 - Créer des nouveaux joueurs \n"

@@ -1,4 +1,5 @@
 from tinydb import TinyDB, Query
+from Views.View import View
 
 
 class Data:
@@ -49,19 +50,19 @@ class Data:
     def save_tournament_player(self, player):
         if len(self.db.table("tournament_player")) < 8:
             self.tournament_players.insert(player)
-            print(self.tournament_players.all())
+            View.show_msg(self.tournament_players.all())
         else:
-            print("Complet")
+            View.show_msg("Complet")
 
     def delete_tournament_player(self):
         if not self.tournament_players.all():
-            print("!-- Il n'y a pas de pas de liste à supprimer")
+            View.show_msg("!-- Il n'y a pas de pas de liste à supprimer")
         else:
             self.tournament_players.truncate()
 
     def delete_player(self):
         if not self.players.all():
-            print("!-- Il n'y a pas de pas de liste à supprimer")
+            View.show_msg("!-- Il n'y a pas de pas de liste à supprimer")
         else:
             self.players.truncate()
 
