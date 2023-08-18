@@ -6,7 +6,7 @@ python -m venv "name of your choice"
 For Windows terminal : "name of your choice"\Scripts\activate.bat  
 Powershell terminal : "name of your choice"\Scripts\activate  
 Then enter : pip install -r requirements.txt  
-Press play
+python main.py
 
 # 2- You can start by players menu or tournament menu
 
